@@ -1,6 +1,7 @@
 //observe the chess.java and implement it with minimax for the Ai choice decisions
 //put the code for minimax in this file
 //this assumes that ai is black
+// so far not written in code
 
 
 public int movePiece() {
