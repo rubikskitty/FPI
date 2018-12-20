@@ -24,6 +24,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
   int x = 0;
   Color selected = new Color(110, 89, 31);
   piece board[][] = new piece[9][9];
+  piece redP[] = new piece[12];
   int empty = 0;
   int black = 1;
   int red = 2;
@@ -44,10 +45,38 @@ public class checkers extends Applet implements ActionListener, MouseListener {
       pieceBlack = getImage(getDocumentBase(), "black.png");
       pieceRed = getImage(getDocumentBase(), "red.png");
 
+      piece checkerOne = new piece();
+      piece checkerTwo = new piece();
+      piece checkerThree = new piece();
+      piece checkerFour = new piece();
+      piece checkerFive = new piece();
+      piece checkerSix = new piece();
+      piece checkerSeven = new piece();
+      piece checkerEight = new piece();
+      piece checkerNine = new piece();
+      piece checkerTen = new piece();
+      piece checkerEleven = new piece();
+      piece checkerTwelve = new piece();
+
+      redP.add(checkerOne);
+      redP.add(checkerTwo);
+      redP.add(checkerThree);
+      redP.add(checkerFour);
+      redP.add(checkerFive);
+      redP.add(checkerSix);
+      redP.add(checkerSeven);
+      redP.add(checkerEight);
+      redP.add(checkerNine);
+      redP.add(checkerTen);
+      redP.add(checkerEleven);
+      redP.add(checkerTwelve);
+
+      int counter = 0;
       for (int i = 1; i < 9; i++) {
           for (int j = 1; j <= 3; j++) {
             if (((j % 2 != 0) && (i % 2 == 0)) || ((j % 2 == 0) && (i % 2 != 0))) {
-              board[i][j] = 1;
+              board[i][j] = redP.get(counter);
+              counter++;
             }
           }
         }
