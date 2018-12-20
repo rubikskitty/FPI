@@ -16,17 +16,17 @@ public class Chess extends Applet implements ActionListener, MouseListener {
   Image backbuffer;
   Timer timeCount;
   //required things
-  
+
   Image picture;
   Image piece;
   //images for each piece
-  
+
   int x = 0;
   //
-  
+
   Color selected = new Color(110, 89, 31);
   // variable to store the selected color
-  
+
   static player playerOne = new player();
   static player playerTwo = new player();
   //creates both player characters
@@ -34,7 +34,7 @@ public class Chess extends Applet implements ActionListener, MouseListener {
 
   static boolean oneSelected = false;
   //variable to check if a piece is selected
-  
+
   ArrayList<piece> blackPieces = new ArrayList<piece>();
   ArrayList<piece> whitePieces = new ArrayList<piece>();
   //arraylists to track each players pieces, and all information involved
@@ -61,7 +61,7 @@ public class Chess extends Applet implements ActionListener, MouseListener {
   static pawn blackPawnSix = new pawn();
   static pawn blackPawnSeven = new pawn();
   static pawn blackPawnEight = new pawn();
-  //create black pawns 
+  //create black pawns
 
   static rook whiteRookOne = new rook();
   static rook whiteRookTwo = new rook();
@@ -85,14 +85,14 @@ public class Chess extends Applet implements ActionListener, MouseListener {
 
   static AudioClip chessSound;
   //chess movement sound
-  
+
   public void init() {
 
       backbuffer = createImage( 1000, 1000 );
       backg = backbuffer.getGraphics();
       setSize(1000, 1000);
       //all required to create the screen
-      
+
       backg.setColor( Color.black );
       backg.fillRect( 0, 0, 1000, 1000);
       addMouseListener(this);
@@ -152,7 +152,7 @@ public class Chess extends Applet implements ActionListener, MouseListener {
       blackKnightTwo.h = getImage(getDocumentBase(), "blackKnight.png");
       blackQueen.h = getImage(getDocumentBase(), "blackQueen.png");
       blackKing.h = getImage(getDocumentBase(), "blackKing.png");
-      
+
 
       blackPawnOne.h = getImage(getDocumentBase(), "blackPawn.png");
       blackPawnTwo.h = getImage(getDocumentBase(), "blackPawn.png");
@@ -180,7 +180,7 @@ public class Chess extends Applet implements ActionListener, MouseListener {
       whitePawnSix.h = getImage(getDocumentBase(), "whitePawn.png");
       whitePawnSeven.h = getImage(getDocumentBase(), "whitePawn.png");
       whitePawnEight.h = getImage(getDocumentBase(), "whitePawn.png");
-     
+
       //set each piece to its specific image
 
       blackRookOne.Xposition = 0;
@@ -199,7 +199,7 @@ public class Chess extends Applet implements ActionListener, MouseListener {
       blackQueen.Yposition = 0;
       blackKing.Xposition = 4;
       blackKing.Yposition = 0;
-      
+
 
       blackPawnOne.Xposition = 0;
       blackPawnOne.Yposition = 1;
@@ -251,12 +251,12 @@ public class Chess extends Applet implements ActionListener, MouseListener {
       whitePawnSeven.Yposition = 6;
       whitePawnEight.Xposition = 7;
       whitePawnEight.Yposition = 6;
-      
+
       //set the x and y initial positions of each piece
 
       playerOne.playing = true;
       //player one will start, who is white
-      
+
       chessSound = getAudioClip(getDocumentBase(), "chess.wav");
       //set the pawn moving sound to the sound
 
@@ -267,22 +267,22 @@ public class Chess extends Applet implements ActionListener, MouseListener {
   }
 
   public void mouseClicked(MouseEvent e) {
-	  
+
       int xpos = e.getX();
       int ypos = e.getY();
-      
+
       //update x and y coordinates
-      
-      
+
+
       int x = 0;
       int y = 0;
       //x and y will track the 0-7, and 0-7 x and y coordinates as opposed to the 100, 200, screen locations
-      
+
       boolean isActive = true;
       //if is
 
       if (e.getClickCount() == 1) {
-    	  
+
           for (int i = 0; i < 8; i++) {
 
               for (int j = 0; j < 800; j+=100) {
@@ -1118,13 +1118,13 @@ public class Chess extends Applet implements ActionListener, MouseListener {
 
 
                 		  if (wKing.pPx.size() == 0 && wKing.pPy.size() == 0 && wKing.inCheck && !futMove) {
-                			  
+
                 			  checkStatement = "Checkmate!, Black wins!";
                 			  backg.drawString(checkStatement, 850, 400);
                 			  repaint();
                 			  timeCount.stop();
                 		  }
-                		  
+
                 		  //tell the players that black won the game and white is in checkmate after it is decided white cannot move to prevent the checkmate, and the kinghas no moves
                 	  }
 
@@ -1159,7 +1159,7 @@ public class Chess extends Applet implements ActionListener, MouseListener {
 
                 		  //the following mass of code looks at every black piece and its possible move, and if it was to move there whether the king would still be in check
                 		  //due to the massive size of this code, I will only comment one block as the rest is repetition
-                		  
+
                 		  for (int j =0; j < blackPieces.size(); j++) {
                 			  //cycle through each black piece
 
@@ -1170,12 +1170,12 @@ public class Chess extends Applet implements ActionListener, MouseListener {
                                   try {
 									     currentPiece = (bishop)blackPieces.get(j).clone();
 									     //clone the black bishop, so the actions of current Piece do not affect the black bishop
-									     
+
 								   } catch (CloneNotSupportedException ez){
 										                  continue;
 										                  //this is a required catch statement
 									                }
-                                  
+
                                   currentPiece.checkMoves(currentPiece, playerTwo, blackPieces, whitePieces);
                                   //for the current bishop check all capable moves, which will save to its move list fields
 
@@ -1198,31 +1198,31 @@ public class Chess extends Applet implements ActionListener, MouseListener {
 
                                   aPieces.remove(blackPieces.get(j));
                                   //remove the black bishop that was initially chosen from the copied list
-                                  
+
                                   aPieces.add(currentPiece);
                                   //add the current chosen piece which is a copy of the black bishop that was removed
 
                                   for (int k = 0; k < currentPiece.pPx.size(); k++) {
                                 	  //cycle through the possible moves for the copied black bishop
-                                	  
+
                                 	  currentPiece.Xposition = currentPiece.pPx.get(k);
-                                	  
+
                                 	  currentPiece.Yposition = currentPiece.pPy.get(k);
                                 	  //change the x and y pos of the current piece to the the current moves that are cycled on
 
                                 	  for (int m = 0; m < whitePieces.size(); m++) {
-                                		  //cycle through each whitePiece in the white piece list 
+                                		  //cycle through each whitePiece in the white piece list
                                 		  //due to the repetition of the code i will only go over the bishop code in this sub group
-                                		  
+
                                 		  if (whitePieces.get(m) instanceof bishop) {
-                                			  //if that piece is a bishop 
+                                			  //if that piece is a bishop
                                               bishop currentPiecea = (bishop)whitePieces.get(m);
                                               //make another piece that will be a bishop that is the same as the white bishop
                                               currentPiecea.checkMoves(currentPiecea, playerOne, whitePieces, aPieces);
                                               //check the moves for this piece
 
                                               for (int l =0; l < whitePieces.get(m).pPx.size(); l++) {
-                                            	  
+
 
 
                                                   if ((currentPiecea.pPx.get(l) == bKing.Xposition) &&  (currentPiecea.pPy.get(l) ==  bKing.Yposition)) {
@@ -1990,7 +1990,7 @@ public class Chess extends Applet implements ActionListener, MouseListener {
                 		  }
                 	  }
 
-                	  	// changes to black piece that is selected when another is chosen 
+                	  	// changes to black piece that is selected when another is chosen
                       if ((blackPieces.get(i).Xposition == x) && (blackPieces.get(i).Yposition ==y)) {
                           for (int j = 0; j < blackPieces.size(); j++) {
                               if (blackPieces.get(j).isSelected == true) {
@@ -2041,24 +2041,24 @@ public class Chess extends Applet implements ActionListener, MouseListener {
                             currentPiece.checkMoves(currentPiece, playerOne, playerTwo, whitePieces, blackPieces);
 
                         }
-                        
+
                         //if the selected piece is the specified one the pieces possible move will be updated
 
                           for (int j = 0; j < whitePieces.get(i).pPx.size(); j++) {
 
                               if (x == whitePieces.get(i).pPx.get(j) && y == whitePieces.get(i).pPy.get(j)) {
                             	  // if the current selected square is one of the possible moves
-                            	  	
+
                                   whitePieces.get(i).Xposition  = x;
                                   whitePieces.get(i).Yposition  = y;
                                   //change the piece x and y to the clicked location
-                                  
+
                                   whitePieces.get(i).isSelected = false;
                                   //the piece is no longer selected
-                                  
+
                                   oneSelected = false;
                                   //no piece is longer selected
-                                  
+
                                   playerOne.playing = false;
                                   playerTwo.playing = true;
                                   //it is player twos turns
@@ -2066,21 +2066,21 @@ public class Chess extends Applet implements ActionListener, MouseListener {
                                   //bishop will only be commented due to repetition
                                   //additonally this is the same code for the black player
                                   //some of these areas have wrong variables and may not work due to it being done so soon, but the game will continue
-                                  
+
                                   for (int k =0, po = 0; k < whitePieces.size() && po < blackPieces.size(); k++, po++) {
-                                	  
+
                                       if (whitePieces.get(k) instanceof king) {
                                     	  //if the whitePiece is a king
-                                    	  
+
                                           king currentKing = (king)whitePieces.get(k);
                                           //a new variable will be the current selected king
-                                          
+
                                           if (blackPieces.get(po) instanceof bishop) {
                                         	  //if the current black piece is a bishop
-                                        	  
+
                                               bishop currentPiece = (bishop)blackPieces.get(po);
                                               //create a new bishop variable that is a copy of the black current bishop
-                                              
+
                                               currentPiece.checkMoves(currentPiece, playerTwo, blackPieces, whitePieces);
                                               //check the moves for that current bishop
 
@@ -2331,7 +2331,7 @@ public class Chess extends Applet implements ActionListener, MouseListener {
                                     }
 
                                 }
-                                
+
                                   if (whitePieces.get(i) instanceof pawn) {
                                     pawn currentPiece = (pawn)whitePieces.get(i);
                                     currentPiece.hasMovedTwice = true;
@@ -2667,14 +2667,14 @@ public class Chess extends Applet implements ActionListener, MouseListener {
       if (playerOne.playing) {
     	  		//if it is the white player turn change the text to white player turn
     	  		//this section will be commented for black, while for white it will not
-    	  
+
             playerStatement = "White player turn";
 
             for (int i =0; i < whitePieces.size(); i++) {
-            	
+
             	if (whitePieces.get(i).isSelected) {
-            		
-            		
+
+
             		backg.setColor(selected);
             		backg.fillRect(100*whitePieces.get(i).Xposition, 100*whitePieces.get(i).Yposition, 100, 100);
 
@@ -2713,14 +2713,14 @@ public class Chess extends Applet implements ActionListener, MouseListener {
       if (playerTwo.playing) {
             playerStatement = "Black player turn";
             //change the statement to the black player
-            
+
           for (int i =0; i < blackPieces.size(); i++) {
 
             if (blackPieces.get(i).isSelected) {
 
                 backg.setColor(selected);
                 backg.fillRect(100*blackPieces.get(i).Xposition, 100*blackPieces.get(i).Yposition, 100, 100);
-                
+
                 //if the current piece is selected, draw the selected brown square at their current x and ys
 
             }
@@ -2729,7 +2729,7 @@ public class Chess extends Applet implements ActionListener, MouseListener {
                 if (blackPieces.get(i).isSelected) {
                     backg.fillRect(100*blackPieces.get(i).pPx.get(j), 100*blackPieces.get(i).pPy.get(j), 100, 100);
                 }
-                
+
                 //additionally draw a brown square in each possible move square
 
             }
@@ -2780,7 +2780,7 @@ public class Chess extends Applet implements ActionListener, MouseListener {
 
       for (int i = 0; i < whitePieces.size(); i++) {
             if (whitePieces.get(i) instanceof king) {
-            	
+
 
                 king currentKing = (king)whitePieces.get(i);
                 if (currentKing.inCheck) {
@@ -2846,21 +2846,21 @@ class piece extends Chess{
   //this is the y position on the board for the piece
   boolean isSelected;
   //this variable tracks wheher the piece is selected
-  
+
   boolean isDead = false;
   //this variable tracks whether the piece is dead
-  
+
   ArrayList<Integer> pPx = new ArrayList<Integer>();
   //  this arraylist tracks the possible x locations in movement for the piece
-  
+
   ArrayList<Integer> pPy = new ArrayList<Integer>();
   //this arraylist tracks the possible y locations in movement for the piece
-  
+
 
   public void drawPiece(Graphics g, piece p) {
     g.drawImage(p.h, (p.Xposition * 100) + 15, (p.Yposition * 100) + 15, 75,75, this);
   }
-  
+
   //this method draws the piece in the desired location
 }
 
@@ -3013,7 +3013,7 @@ class pawn extends piece implements Cloneable{
 
           }
 }
-//pawns check moves based on color, and have a field to track whether the initial movement occured, 
+//pawns check moves based on color, and have a field to track whether the initial movement occured,
 
 class knight extends piece {
 
@@ -3246,7 +3246,7 @@ class bishop extends piece {
 class king extends piece {
 
     boolean inCheck;
-    //keeps track of whether the king is in check 
+    //keeps track of whether the king is in check
 
 
     public void checkMoves(king g, player p, player pa, ArrayList<piece> e, ArrayList<piece> a) {
@@ -3254,7 +3254,7 @@ class king extends piece {
         ArrayList<Integer> emptyX = new ArrayList<Integer>();
         ArrayList<Integer> emptyY = new ArrayList<Integer>();
         //2 lists to reset the possible move lists
-        
+
 
         boolean var = false;
         boolean ya = false;
@@ -3273,9 +3273,9 @@ class king extends piece {
                   if ((i == g.Xposition + 1) && (((j/100) == g.Yposition +1 )) || (i == g.Xposition + 1) && (((j/100) == g.Yposition - 1 )) || (i == g.Xposition - 1) && (((j/100) == g.Yposition +1 )) || (i == g.Xposition - 1) && (((j/100) == g.Yposition - 1 )) || (i == g.Xposition + 1) && (((j/100) == g.Yposition )) || (i == g.Xposition - 1) && (((j/100) == g.Yposition )) || (i == g.Xposition) && (((j/100) == g.Yposition + 1)) || (i == g.Xposition) && (((j/100) == g.Yposition -1))) {
                       var = false;
                       //massive if statement that contains all possible moves for the king, and if it is a move continue on
-                      
+
                       for (int k = 0; k < e.size(); k++) {
-                    	  	
+
                           if ((((i == e.get(k).Xposition) && ((j/100) == e.get(k).Yposition))) && !e.get(k).isDead)  {
                              var = true;
                              //the move will be avaliable unless it is occupied by an enemy
@@ -3291,14 +3291,14 @@ class king extends piece {
                       for (int n = 0; n < a.size(); n++) {
                     	  if (a.get(n)instanceof knight) {
                     		  //if the piece in the enemy cycle is a knight set the current piece to that knight
-                    		  
+
                     		  knight currentPiece = (knight)a.get(n);
                               currentPiece.checkMoves(currentPiece, pa, a);
                               //check the currentMoves for this knight
 
                               for (int q = 0; q < currentPiece.pPx.size(); q++) {
                             	  //check the possible moves for this black knight
-                            	  
+
                             	  if ((i ==  currentPiece.pPx.get(q)) && ((j/100) ==  currentPiece.pPy.get(q))) {
                             		  //if the current square aligns with the possible move, this move will not be avaliable to the king
                             		  var = true;
@@ -3599,8 +3599,8 @@ class queen extends piece {
 
 
                           }
-                          
-                          
+
+
 
 
                       }
@@ -3813,5 +3813,75 @@ class rook extends piece {
               }
 
     }
+
+}
+
+class AiPlayer extends player {
+
+    public int movePiece() {
+      int position = findBestMove
+      return position;
+    }
+
+    public int findBestMove(ArrayList<piece> whitePiecesList, ArrayList<piece> blackPiecesList, board) {
+
+      int bestVal;
+      Boolean isMaximizeplayer;
+
+      for (int i = 0; i < blackPiecesList.size(); i++) {
+
+          for (int j = 0; j < blackPiecesList.get(i).pPx.size(); j++) {
+
+              bestVal = miniMax(blackPiecesList.get(i), 0, !isMaximizeplayer);
+          }
+
+      }
+
+    }
+
+public int miniMax(current piece, all the white pieces, all the black pieces, isMaximizePlayer) {
+
+  int bestVal;
+  int reward = 0;
+
+  if (!isMaximizingPlayer) {
+
+      make the supposed move
+
+      create a rewards system, so if pawn 5 points, if knight or bishop 10 poits, if rook 15 points, queen 500 points, king 2000 points
+      check the rewards see if the move gives any of the values
+
+      for each piece white can possibly move with the new board {
+
+              cycle through every position {
+
+                  bestVal = miniMax(position, depth, isMaximizeplayer);
+                }
+
+      }
+
+
+}
+
+else {
+
+    make the supposed move
+
+    create a rewards system, so if pawn -5 points, if knight or bishop -10 poits, if rook -15 points, queen -500 points, king -2000 points
+    check the rewards see if the move gives any of the values
+
+    for each piece black can possibly move {
+
+        cycle through every position {
+
+            bestVal = miniMax(position, depth, !isMaximizeplayer);
+          }
+
+        }
+
+
+}
+
+}
 
 }
