@@ -10,9 +10,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.applet.*;
 
-/*<applet code="test"width=400 height=400></applet>*/
+/*<applet code="checkers"width=400 height=400></applet>*/
 
-public class partA extends Applet implements ActionListener, MouseListener {
+public class checkers extends Applet implements ActionListener, MouseListener {
 
   Graphics backg;
   Image backbuffer;
@@ -23,11 +23,12 @@ public class partA extends Applet implements ActionListener, MouseListener {
   Image pieceRed;
   int x = 0;
   Color selected = new Color(110, 89, 31);
-  int board[][] = new int[9][9];
+  piece board[][] = new piece[9][9];
   int empty = 0;
   int black = 1;
   int red = 2;
-
+  int checkerNumberRed = 12;
+  int checkerNumberBlack = 12;
 
   public void init() {
 
@@ -43,30 +44,20 @@ public class partA extends Applet implements ActionListener, MouseListener {
       pieceBlack = getImage(getDocumentBase(), "black.png");
       pieceRed = getImage(getDocumentBase(), "red.png");
 
-
-          for (int i = 1; i < 9; i++) {
-              for (int j = 1; j <= 3; j++) {
-                if (((j % 2 != 0) && (i % 2 == 0)) || ((j % 2 == 0) && (i % 2 != 0))) {
-                  board[i][j] = 1;
-                }
-              }
-            }
-      //
       for (int i = 1; i < 9; i++) {
-          for (int j = 5; j <= 8; j++) {
-            if (((j % 2 == 0) && (i % 2 == 0)) || ((j % 2 != 0) && (i % 2 != 0))) {
-              board[i][j] = 2;
+          for (int j = 1; j <= 3; j++) {
+            if (((j % 2 != 0) && (i % 2 == 0)) || ((j % 2 == 0) && (i % 2 != 0))) {
+              board[i][j] = 1;
             }
           }
         }
-
-
-
-    for(int i =1; i < 9; i++) {
-	     for (int j = 1; j< 9; j++) {
-	    System.out.print(board[j][i]);
-	   }
-     System.out.println("");
+  //
+    for (int i = 1; i < 9; i++) {
+      for (int j = 5; j <= 8; j++) {
+        if (((j % 2 == 0) && (i % 2 == 0)) || ((j % 2 != 0) && (i % 2 != 0))) {
+          board[i][j] = 2;
+        }
+      }
     }
 
     }
@@ -77,6 +68,10 @@ public class partA extends Applet implements ActionListener, MouseListener {
 
   public void mouseClicked(MouseEvent e) {
 
+   //Constantly check the mouse position
+
+       repaint();
+   //What happemns if you click the reset button
 	  }
 	  //make something that checks if something is currently selected
 
@@ -95,7 +90,6 @@ public class partA extends Applet implements ActionListener, MouseListener {
   public void actionPerformed(ActionEvent e){
     if (e.getSource() == timeCount) {
 
-
       backg.setColor(Color.white);
       backg.fillRect( 0, 0, 1000, 1000);
       backg.drawImage(picture, 0, 0, 500,500 ,this);
@@ -109,7 +103,7 @@ public class partA extends Applet implements ActionListener, MouseListener {
 	           //put the piece at the supposed location as black
 	          }
 
-	      else if(board[i][j-1] == 2) {
+	      else if(board[i][j] == 2) {
 
 	         backg.drawImage(pieceRed, ((i-1)*63) + 2, ((j-1)*63) + 4, 55, 55, this);
 	          //put the piece at the supposed location as red
@@ -136,4 +130,13 @@ public class partA extends Applet implements ActionListener, MouseListener {
 
   public void mouseReleased(MouseEvent e) {
   }
+}
+
+class piece extends checkers {
+
+  int xPos = 0;
+  int yPos = 0;
+
+
+
 }
