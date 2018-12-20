@@ -9,16 +9,16 @@ public int movePiece() {
   return position;
 }
 
-public int findBestMove(all the white pieces, all the black pieces, board) {
+public int findBestMove(ArrayList<piece> whitePiecesList, ArrayList<piece> blackPiecesList, board) {
 
     int bestVal;
     Boolean isMaximizeplayer;
 
-    for each piece black can possibly move {
+    for (int i =0; i < blackPiecesList.size(); i++)
 
-        cycle through every position {
+        for (int j = 0; j < blackPiecesList.get(i).pPx.size(); j++) {
 
-            bestVal = miniMax(position, depth, !isMaximizeplayer);
+            bestVal = miniMax(blackPiecesList.get(i), 0, !isMaximizeplayer);
         }
 
     }
@@ -29,7 +29,6 @@ public int findBestMove(all the white pieces, all the black pieces, board) {
 public int miniMax(current piece, all the white pieces, all the black pieces, isMaximizePlayer) {
 
     int bestVal;
-    int tempBoard
     int reward = 0;
 
     if (!isMaximizingPlayer) {
@@ -82,7 +81,7 @@ if (playerTwo.playing) {
 
                                   //the following mass of code looks at every black piece and its possible move, and if it was to move there whether the king would still be in check
                                   //due to the massive size of this code, I will only comment one block as the rest is repetition
-                                  
+
                                   for (int j =0; j < blackPieces.size(); j++) {
                                           //cycle through each black piece
 
@@ -93,12 +92,12 @@ if (playerTwo.playing) {
                                   try {
                                                                              currentPiece = (bishop)blackPieces.get(j).clone();
                                                                              //clone the black bishop, so the actions of current Piece do not affect the black bishop
-                                                                             
+
                                                                    } catch (CloneNotSupportedException ez){
                                                                                                   continue;
                                                                                                   //this is a required catch statement
                                                                                         }
-                                  
+
                                   currentPiece.checkMoves(currentPiece, playerTwo, blackPieces, whitePieces);
                                   //for the current bishop check all capable moves, which will save to its move list fields
 
@@ -121,31 +120,31 @@ if (playerTwo.playing) {
 
                                   aPieces.remove(blackPieces.get(j));
                                   //remove the black bishop that was initially chosen from the copied list
-                                  
+
                                   aPieces.add(currentPiece);
                                   //add the current chosen piece which is a copy of the black bishop that was removed
 
                                   for (int k = 0; k < currentPiece.pPx.size(); k++) {
                                           //cycle through the possible moves for the copied black bishop
-                                          
+
                                           currentPiece.Xposition = currentPiece.pPx.get(k);
-                                          
+
                                           currentPiece.Yposition = currentPiece.pPy.get(k);
                                           //change the x and y pos of the current piece to the the current moves that are cycled on
 
                                           for (int m = 0; m < whitePieces.size(); m++) {
-                                                  //cycle through each whitePiece in the white piece list 
+                                                  //cycle through each whitePiece in the white piece list
                                                   //due to the repetition of the code i will only go over the bishop code in this sub group
-                                                  
+
                                                   if (whitePieces.get(m) instanceof bishop) {
-                                                          //if that piece is a bishop 
+                                                          //if that piece is a bishop
                                               bishop currentPiecea = (bishop)whitePieces.get(m);
                                               //make another piece that will be a bishop that is the same as the white bishop
                                               currentPiecea.checkMoves(currentPiecea, playerOne, whitePieces, aPieces);
                                               //check the moves for this piece
 
                                               for (int l =0; l < whitePieces.get(m).pPx.size(); l++) {
-                                                  
+
 
 
                                                   if ((currentPiecea.pPx.get(l) == bKing.Xposition) &&  (currentPiecea.pPy.get(l) ==  bKing.Yposition)) {
@@ -913,7 +912,7 @@ if (playerTwo.playing) {
                                   }
                           }
 
-                                // changes to black piece that is selected when another is chosen 
+                                // changes to black piece that is selected when another is chosen
                       if ((blackPieces.get(i).Xposition == x) && (blackPieces.get(i).Yposition ==y)) {
                           for (int j = 0; j < blackPieces.size(); j++) {
                               if (blackPieces.get(j).isSelected == true) {
@@ -927,7 +926,7 @@ if (playerTwo.playing) {
                   }
               }
 
-              
+
               class ai extends player {
 
     String huPlayer = "X";
