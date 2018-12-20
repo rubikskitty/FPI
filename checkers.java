@@ -25,11 +25,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
   Color selected = new Color(110, 89, 31);
   piece board[][] = new piece[9][9];
   piece redP[] = new piece[12];
-  int empty = 0;
-  int black = 1;
-  int red = 2;
-  int checkerNumberRed = 12;
-  int checkerNumberBlack = 12;
+  piece blackP[] = new piece[12];
 
   public void init() {
 
@@ -58,6 +54,19 @@ public class checkers extends Applet implements ActionListener, MouseListener {
       piece checkerEleven = new piece();
       piece checkerTwelve = new piece();
 
+      piece checkerThirteen = new piece();
+      piece checkerFourteen = new piece();
+      piece checkerFifeteen = new piece();
+      piece checkerSixteen = new piece();
+      piece checkerSeventeen = new piece();
+      piece checkerEighteen = new piece();
+      piece checkerNineteen = new piece();
+      piece checkerTwenty = new piece();
+      piece checkerTwentyOne = new piece();
+      piece checkerTwentyTwo = new piece();
+      piece checkerTwentyThree = new piece();
+      piece checkerTwentyFour = new piece();
+
       redP.add(checkerOne);
       redP.add(checkerTwo);
       redP.add(checkerThree);
@@ -70,21 +79,57 @@ public class checkers extends Applet implements ActionListener, MouseListener {
       redP.add(checkerTen);
       redP.add(checkerEleven);
       redP.add(checkerTwelve);
+      //add every red piece to the list of red pieces
+
+      for (int i = 0; i < 11; i++) {
+
+        redP.get(i) = 1; //set the colour of side to the red pieces, where red is 1
+        
+      }
+
+      blackP.add(checkerThirteen);
+      blackP.add(checkerFourteen);
+      blackP.add(checkerFifeteen);
+      blackP.add(checkerSixteen);
+      blackP.add(checkerSeventeen);
+      blackP.add(checkerEighteen);
+      blackP.add(checkerNineteen);
+      blackP.add(checkerTwenty);
+      blackP.add(checkerTwentyOne);
+      blackP.add(checkerTwentyTwo);
+      blackP.add(checkerTwentyThree);
+      blackP.add(checkerTwentyFour);
+      //add every black piece to the list of black pieces
+
+      for (int i = 0; i < 11; i++) {
+          blackP.get(i) = 2; //set the side of each black piece to black, where 2 == black
+      }
+
 
       int counter = 0;
       for (int i = 1; i < 9; i++) {
           for (int j = 1; j <= 3; j++) {
             if (((j % 2 != 0) && (i % 2 == 0)) || ((j % 2 == 0) && (i % 2 != 0))) {
+
               board[i][j] = redP.get(counter);
-              counter++;
+              redP.get(counter).xPos = i;
+              redP.get(counter).yPos = j;
+              counter++;//confirm that this actually works
+
             }
           }
         }
   //
+    counter = 0;
     for (int i = 1; i < 9; i++) {
       for (int j = 5; j <= 8; j++) {
         if (((j % 2 == 0) && (i % 2 == 0)) || ((j % 2 != 0) && (i % 2 != 0))) {
-          board[i][j] = 2;
+
+          board[i][j] = blackP.get(counter);
+          blackP.get(counter).xPos = i;
+          blackP.get(counter).yPos = j;
+          counter++;//confirm that this actually works
+
         }
       }
     }
@@ -126,13 +171,13 @@ public class checkers extends Applet implements ActionListener, MouseListener {
   for (int i = 1; i < 9; i++) {
 	   for (int j = 1; j <= 8; j++) {
 
-	      if (board[i][j] == 1) {
+	      if ((board[i][j] instanceOf piece) && (board[i][j].side == 2)) {
 
 	          backg.drawImage(pieceBlack, ((i-1)*63) + 7, ((j-1)*63) + 10, 45, 45, this);
 	           //put the piece at the supposed location as black
 	          }
 
-	      else if(board[i][j] == 2) {
+	      else if ((board[i][j] instanceOf piece) && (board[i][j].side == 1)) {
 
 	         backg.drawImage(pieceRed, ((i-1)*63) + 2, ((j-1)*63) + 4, 55, 55, this);
 	          //put the piece at the supposed location as red
@@ -166,6 +211,6 @@ class piece extends checkers {
   int xPos = 0;
   int yPos = 0;
 
-
+  int side = 0;
 
 }
