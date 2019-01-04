@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.awt.event.*;
 import javax.swing.*;
 import java.applet.*;
-import java.util.HashMap.*;//make sure to research HASHMAP 
+import java.util.HashMap.*;//make sure to research HASHMAP
 //necessary imports
 
 /*<applet code="checkers"width=400 height=400></applet>*/
@@ -239,7 +239,14 @@ class piece extends checkers {
   int side = 0;
   //tracking variables
 
-  HashMap movesPossible<Integer,Integer> = new HashMap<Integer,Integer>();
+  ArrayList<ArrayList<Integer>> movesPossible = new ArrayList<ArrayList<Integer>>();
+
+  ArrayList<Integer> x = new ArrayList<Integer>();
+  ArrayList<Integer> y = new ArrayList<Integer>();
+
+  movesPossible.add(x);
+  movesPossible.add(y);
+
    //find a way to store the moves possible for the current piece in some sort of array
 
   public void movesOpen (piece p, piece[][] board) {
@@ -258,7 +265,8 @@ class piece extends checkers {
 
           if ((board[i][j] instanceof piece) && ((Math.abs(tempX-i) < 9) && (Math.abs(tempY-j) < 9))) {
 
-            movesPossible.put(i, j);//add the location to the moves possible list
+            movesPossible.get(0).add(i);//add the location to the moves possible list
+            movesPossible.get(1).add(j);//add the location to the moves possible list
 
           }
 
