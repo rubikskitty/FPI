@@ -158,6 +158,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
        int xpos = e.getX();
        int ypos = e.getY();
 
+       /*
        if (piece is clicked) {
 
          take the list of open positions, = piece.movesOpen
@@ -168,9 +169,14 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
            have a state where the person can either chose one of the possible moves, or chose a different piece,
 
+
+
          }
 
+
        }
+
+       */
        repaint();
 	  }
 	  //make something that checks if something is currently selected
@@ -241,11 +247,14 @@ class piece extends checkers {
 
   ArrayList<ArrayList<Integer>> movesPossible = new ArrayList<ArrayList<Integer>>();
 
-  ArrayList<Integer> x = new ArrayList<Integer>();
-  ArrayList<Integer> y = new ArrayList<Integer>();
+  ArrayList<Integer> xArray = new ArrayList<Integer>();
+  ArrayList<Integer> yArray = new ArrayList<Integer>();
 
-  movesPossible.add(x);
-  movesPossible.add(y);
+  protected piece(){
+      movesPossible.add(xArray);
+      movesPossible.add(yArray);
+    }
+
 
    //find a way to store the moves possible for the current piece in some sort of array
 
