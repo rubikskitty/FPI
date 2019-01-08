@@ -117,34 +117,36 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
       }
 
-      int counter = 0;
-
+      int pieceNum = 0;
       for (int i = 1; i < 9; i++) {
           for (int j = 1; j <= 3; j++) {
             if (((j % 2 != 0) && (i % 2 == 0)) || ((j % 2 == 0) && (i % 2 != 0))) {
 
-              board[i][j] = redP[counter];
-              redP[counter].xPos = i;
-              redP[counter].yPos = j;
-              counter++;//confirm that this actually works
-
+              board[i][j] = redP[pieceNum];
+              redP[pieceNum].xPos = i;
+              redP[pieceNum].yPos = j;//so this will assign the red piece to their initial location
+              pieceNum++;//confirm that this actually works
             }
           }
         }
+  //
 
-    counter = 0;
-    for (int i = 1; i < 9; i++) {
-      for (int j = 5; j <= 8; j++) {
-        if (((j % 2 == 0) && (i % 2 == 0)) || ((j % 2 != 0) && (i % 2 != 0))) {
+  pieceNum = 0;
+  for (int i = 1; i < 9; i++) {
+      for (int j = 6; j <= 8; j++) {
+        if ((((j) % 2 == 0) && ((i) % 2 != 0)) || (((j) % 2 != 0) && ((i) % 2 == 0))) {
 
-          board[i][j] = blackP[counter];
-          blackP[counter].xPos = i;
-          blackP[counter].yPos = j;
-          counter++;//confirm that this actually works
+          board[i][j] = blackP[pieceNum];
+          blackP[pieceNum].xPos = i;
+          blackP[pieceNum].yPos = j;
+          pieceNum++;//confirm that this actually works
+
 
         }
       }
     }
+
+
 
     }
 
@@ -157,6 +159,19 @@ public class checkers extends Applet implements ActionListener, MouseListener {
    //Constantly check the mouse position
        int xpos = e.getX();
        int ypos = e.getY();
+
+       for (int i = 0; i < redP.length-1; i++) {
+
+         redP[i].movesOpen(redP[i], board);
+
+         System.out.println(redP[i].xPos +" y" + redP[i].yPos);
+         for (int j = 0; j < redP[i].movesPossible.get(0).size(); j++) {
+
+           System.out.println (redP[i].movesPossible.get(0).get(j) + " " + redP[i].movesPossible.get(1).get(j));
+         }
+
+       }
+
 
        /*
        if (piece is clicked) {
@@ -201,7 +216,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
       backg.drawImage(picture, 0, 0, 500,500 ,this);
 
       for (int i = 1; i < 9; i++) {
-	       for (int j = 1; j <= 8; j++) {
+	       for (int j = 1; j < 9; j++) {
 
 	          if ((board[i][j] instanceof piece) && (board[i][j].side == 2)) {
 
@@ -209,7 +224,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 	             //put the piece at the supposed location as black
 	           }
 
-	           else if ((board[i][j] instanceof piece) && (board[i][j].side == 1)) {
+	           if ((board[i][j] instanceof piece) && (board[i][j].side == 1)) {
 
 	              backg.drawImage(pieceRed, ((i-1)*63) + 2, ((j-1)*63) + 4, 55, 55, this);
 	          //put the piece at the supposed location as red
@@ -243,6 +258,8 @@ class piece extends checkers {
   int xPos = 0;
   int yPos = 0;
   int side = 0;
+  int tempX = 0;
+  int tempY = 0;
   //tracking variables
 
   ArrayList<ArrayList<Integer>> movesPossible = new ArrayList<ArrayList<Integer>>();
@@ -260,22 +277,32 @@ class piece extends checkers {
 
   public void movesOpen (piece p, piece[][] board) {
 
-      for (int i = 0 ; i  < 8; i++) {
+      for (int i = 1 ; i  < 9; i++) {
 
-        for (int j = 0 ; j  < 8; j++) {
+        for (int j = 1 ; j  < 9; j++) {
 
-          if (board[i][j] instanceof piece) {
+          int difX = Math.abs(p.xPos-i);
+          int difY = Math.abs(p.yPos-j);
+          boolean checkLane = false;
 
-              int tempX = board[i][j].Xpos;
-              int tempY = board[i][j].Ypos;
-              //for each piece in the board cycle through
+           if (difX == difY) {
 
-          }
+             for (int k = i, m = j; k < p.xPos && m < p.yPos; k++,m++) {
 
-          if ((board[i][j] instanceof piece) && ((Math.abs(tempX-i) < 9) && (Math.abs(tempY-j) < 9))) {
+               if (board[k][m] instanceof piece) {
+                 checkLane = true;//fix this up but other than that it seems to recognize open moves
+                 break;
+               }
 
-            movesPossible.get(0).add(i);//add the location to the moves possible list
-            movesPossible.get(1).add(j);//add the location to the moves possible list
+             }
+
+           }
+
+
+          if (((difX < 9) && (difY < 9)) && (difX == difY) && (board[i][j] == null) && ((i != p.xPos) && (j != p.yPos)) && (checkLane == false)) {
+
+            p.movesPossible.get(0).add(i);//add the location to the moves possible list
+            p.movesPossible.get(1).add(j);//add the location to the moves possible list
 
           }
 
