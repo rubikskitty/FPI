@@ -27,10 +27,14 @@ public class checkers extends Applet implements ActionListener, MouseListener {
   int x = 0;
   Color selected = new Color(110, 89, 31);
   //
+  boolean selectedPiece = false;
 
   piece board[][] = new piece[9][9];
   piece redP[] = new piece[12];
   piece blackP[] = new piece[12];
+
+  public static piece currentPiece = new piece();
+
   //arrays of pieces, one to represent the board, and two to represent each sidde in the checker game
 
   public void init() {
@@ -60,6 +64,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
       piece checkerEleven = new piece();
       piece checkerTwelve = new piece();
       //red checkers creation
+
 
       piece checkerThirteen = new piece();
       piece checkerFourteen = new piece();
@@ -158,8 +163,6 @@ public class checkers extends Applet implements ActionListener, MouseListener {
    //Constantly check the mouse position
        int xpos = e.getX();
        int ypos = e.getY();
-       piece select = new piece();
-
 
        for (int i = 1; i < 9; i++) {
          for (int j = 1; j < 9; j++) {
@@ -174,15 +177,15 @@ public class checkers extends Applet implements ActionListener, MouseListener {
            }
 
 
-         if (((xpos > (i-1)*60) && (xpos < (60*i))) && ((ypos > (j-1)*60) && (ypos < (60*j)))) {
+         if (((xpos > (i-1)*63) && (xpos < (63*i))) && ((ypos > (j-1)*63) && (ypos < (63*j)))) {
 
            if (board[i][j] instanceof piece) {
 
-             select = board[i][j];
-             select.selected = true;
+             currentPiece = board[i][j];
+             currentPiece.selected = true;
+             selectedPiece = true;
 
            }
-
 
          }
 
@@ -190,20 +193,44 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
      }
 
+     if (selectedPiece) {
 
+       if (currentPiece.movesPossible.get(0).size() != 0) {
+         for (int i = 0; i < (currentPiece.movesPossible.get(0).size()-1); i++) {
 
-       for (int i = 0; i < select.movesPossible.get(0).size(); i++) {
+           int tempx = currentPiece.movesPossible.get(0).get(i);
+           int tempy = currentPiece.movesPossible.get(1).get(i);
 
-         if (((xpos > (select.movesPossible.get(0).get(i)-1)*60) && (xpos < (60*select.movesPossible.get(0).get(i)))) && ((ypos > (select.movesPossible.get(1).get(i)-1)*60) && (ypos < (60*select.movesPossible.get(1).get(i))))) {
+           if (((xpos > (tempx-1)*63) && (xpos < (63*tempx))) && ((ypos > (tempy-1)*63) && (ypos < (63*tempy)))) {
 
-           select.xPos = select.movesPossible.get(0).get(i);
-           select.yPos = select.movesPossible.get(1).get(i);//change it so that the piece that is chosen can be moved to one of the possible locations
+             if ((tempx != currentPiece.xPos) || (tempy != currentPiece.yPos)) {
+
+               board[currentPiece.xPos][currentPiece.yPos] = null;
+               board[tempx][tempy] = currentPiece;
+
+               currentPiece.xPos = currentPiece.movesPossible.get(0).get(i);
+               currentPiece.yPos = currentPiece.movesPossible.get(1).get(i);//change it so that the piece that is chosen can be moved to one of the possible locations
+
+               selectedPiece = false;
+               currentPiece.selected = false;
+
+               currentPiece.movesPossible = new ArrayList<ArrayList<Integer>>();
+               ArrayList<Integer> xArray = new ArrayList<Integer>();
+               ArrayList<Integer> yArray = new ArrayList<Integer>();
+
+               currentPiece.movesPossible.add(xArray);
+               currentPiece.movesPossible.add(yArray);
+               break;
+
+             }
+
+           }
 
          }
 
        }
 
-
+     }
 
 
        repaint();
@@ -242,7 +269,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
                for (int k = 0; k < board[i][j].movesPossible.get(0).size(); k++) {
 
-                 backg.fillRect( ((board[i][j].movesPossible.get(0).get(k)-1)*62), ((board[i][j].movesPossible.get(1).get(k)-1)*62), 62, 62);
+                 backg.fillRect( ((board[i][j].movesPossible.get(0).get(k)-1)*63), ((board[i][j].movesPossible.get(1).get(k)-1)*63), 63, 63);
 
                }
 
@@ -291,6 +318,7 @@ class piece extends checkers {
   int side = 0;
   int tempX = 0;
   int tempY = 0;
+  boolean king = false;
   boolean selected = false;
   //tracking variables
 
@@ -306,7 +334,6 @@ class piece extends checkers {
 
 
    //find a way to store the moves possible for the current piece in some sort of array
-
   public void movesOpen (piece p, piece[][] board) {
 
       for (int i = 1 ; i  < 9; i++) {
@@ -321,6 +348,12 @@ class piece extends checkers {
 
              for (int k = i, m = j; k < p.xPos && m > p.yPos; k++,m--) {
 
+               if (p.side == 2 && (!king)) {
+                 checkLane = true;//fix this up but other than that it seems to recognize open moves
+                 break;
+
+               }
+
                if (board[k][m] instanceof piece) {
                  checkLane = true;//fix this up but other than that it seems to recognize open moves
                  break;
@@ -329,6 +362,12 @@ class piece extends checkers {
              }
 
              for (int k = i, m = j; k > p.xPos && m < p.yPos; k--,m++) {
+
+               if (p.side == 1 && (!king)) {
+                 checkLane = true;//fix this up but other than that it seems to recognize open moves
+                 break;
+
+               }
 
                if (board[k][m] instanceof piece) {
                  checkLane = true;//fix this up but other than that it seems to recognize open moves
@@ -339,6 +378,12 @@ class piece extends checkers {
 
              for (int k = i, m = j; k > p.xPos && m > p.yPos; k--,m--) {
 
+               if (p.side == 2 && (!king)) {
+                 checkLane = true;//fix this up but other than that it seems to recognize open moves
+                 break;
+
+               }
+
                if (board[k][m] instanceof piece) {
                  checkLane = true;//fix this up but other than that it seems to recognize open moves
                  break;
@@ -348,8 +393,15 @@ class piece extends checkers {
 
              for (int k = i, m = j; k < p.xPos && m < p.yPos; k++,m++) {
 
-               if (board[k][m] instanceof piece) {
+               if (p.side == 1 && (!king)) {
                  checkLane = true;//fix this up but other than that it seems to recognize open moves
+                 break;
+
+               }
+
+                if (board[k][m] instanceof piece) {
+                 checkLane = true;//fix this up but other than that it seems to recognize open moves
+
                  break;
                }
 
