@@ -343,75 +343,141 @@ class piece extends checkers {
           int difX = Math.abs(p.xPos-i);
           int difY = Math.abs(p.yPos-j);
           boolean checkLane = false;
+          boolean piececnTaken = false;
 
-           if (difX == difY) {
+           if ((difX == 1) && (difY ==1)) {
 
-             for (int k = i, m = j; k < p.xPos && m > p.yPos; k++,m--) {
-
-               if (p.side == 2 && (!king)) {
-                 checkLane = true;//fix this up but other than that it seems to recognize open moves
-                 break;
-
-               }
-
-               if (board[k][m] instanceof piece) {
-                 checkLane = true;//fix this up but other than that it seems to recognize open moves
-                 break;
-               }
-
-             }
-
-             for (int k = i, m = j; k > p.xPos && m < p.yPos; k--,m++) {
-
-               if (p.side == 1 && (!king)) {
-                 checkLane = true;//fix this up but other than that it seems to recognize open moves
-                 break;
-
-               }
-
-               if (board[k][m] instanceof piece) {
-                 checkLane = true;//fix this up but other than that it seems to recognize open moves
-                 break;
-               }
-
-             }
-
-             for (int k = i, m = j; k > p.xPos && m > p.yPos; k--,m--) {
+             if (((i+1) == p.xPos) && ((j-1) == p.yPos)) {
 
                if (p.side == 2 && (!king)) {
                  checkLane = true;//fix this up but other than that it seems to recognize open moves
-                 break;
 
                }
 
-               if (board[k][m] instanceof piece) {
-                 checkLane = true;//fix this up but other than that it seems to recognize open moves
-                 break;
+               if (board[i][j] instanceof piece) {
+
+                 if (board[i][j].side == p.side) {
+
+                   checkLane = true;//fix this up but other than that it seems to recognize open moves
+
+                 }
+                 else {
+                   if (board[i-1][j+1] == null) {
+
+                       p.movesPossible.get(0).add(i-1);//add the location to the moves possible list
+                       p.movesPossible.get(1).add(j+1);//add the location to the moves possible list
+                       checkLane = true;
+                   }
+                   else {
+                     checkLane = true;//fix this up but other than that it seems to recognize open moves
+                   }
+
+                 }
+
+
+
                }
 
              }
 
-             for (int k = i, m = j; k < p.xPos && m < p.yPos; k++,m++) {
+
+            if (((i-1) == p.xPos) && ((j+1) == p.yPos)) {
 
                if (p.side == 1 && (!king)) {
                  checkLane = true;//fix this up but other than that it seems to recognize open moves
-                 break;
 
                }
 
-                if (board[k][m] instanceof piece) {
+               if (board[i][j] instanceof piece) {
+
+                 if (board[i][j].side == p.side) {
+
+                   checkLane = true;//fix this up but other than that it seems to recognize open moves
+
+                 }
+
+               else {
+                 if (board[i+1][j-1] == null) {
+
+                     p.movesPossible.get(0).add(i+1);//add the location to the moves possible list
+                     p.movesPossible.get(1).add(j-1);//add the location to the moves possible list
+                     checkLane = true;
+                 }
+                 else {
+                   checkLane = true;//fix this up but other than that it seems to recognize open moves
+                 }
+
+               }
+             }
+
+             }
+
+             if (((i-1) == p.xPos) && ((j-1) == p.yPos)) {
+
+               if (p.side == 2 && (!king)) {
                  checkLane = true;//fix this up but other than that it seems to recognize open moves
 
-                 break;
+               }
+
+               if (board[i][j] instanceof piece) {
+
+                 if (board[i][j].side == p.side) {
+
+                   checkLane = true;//fix this up but other than that it seems to recognize open moves
+
+                 }
+                 else {
+                   checkLane = true;
+                   if ((i+1 <= 9) && (j+1 <=9)) {
+
+                     if (board[i+1][j+1] == null) {
+
+                         p.movesPossible.get(0).add(i+1);//add the location to the moves possible list
+                         p.movesPossible.get(1).add(j+1);//add the location to the moves possible list
+
+                     }
+                   }
+
+                 }
+
                }
 
              }
 
+             if (((i+1) == p.xPos) && ((j+1) == p.yPos)) {
+
+               if (p.side == 1 && (!king)) {
+                 checkLane = true;//fix this up but other than that it seems to recognize open moves
+               }
+
+               if (board[i][j] instanceof piece) {
+
+                 if (board[i][j].side == p.side) {
+
+                   checkLane = true;//fix this up but other than that it seems to recognize open moves
+
+                 }
+                 else {
+
+                   if ((i-1 >= 1) && (j-1 >=1)) {
+                     checkLane = true;//fix this up but other than that it seems to recognize open moves
+                     if (board[i-1][j-1] == null) {
+
+                         p.movesPossible.get(0).add(i-1);//add the location to the moves possible list
+                         p.movesPossible.get(1).add(j-1);//add the location to the moves possible list
+
+                     }
+                   }
+
+                 }
+               }
+
+             }
 
            }
 
 
-          if (((difX < 9) && (difY < 9)) && (difX == difY) && (board[i][j] == null) && ((i != p.xPos) && (j != p.yPos)) && (checkLane == false)) {
+          if (((difX == 1) && (difY == 1)) && (board[i][j] == null) && ((i != p.xPos) && (j != p.yPos)) && (checkLane == false)) {
 
             p.movesPossible.get(0).add(i);//add the location to the moves possible list
             p.movesPossible.get(1).add(j);//add the location to the moves possible list
