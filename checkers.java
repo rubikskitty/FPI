@@ -163,6 +163,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
    //Constantly check the mouse position
        int xpos = e.getX();
        int ypos = e.getY();
+       //sets the mouse postitions to variables
 
        for (int i = 1; i < 9; i++) {
          for (int j = 1; j < 9; j++) {
@@ -171,7 +172,9 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
              if (board[i][j].selected == true) {
 
-               board[i][j].selected = false;
+               board[i][j].selected = false;// check each piece on the board, if it is selected after being clicked again make it unselected
+
+               //
              }
 
            }
@@ -182,7 +185,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
            if (board[i][j] instanceof piece) {
 
              currentPiece = board[i][j];
-             currentPiece.selected = true;
+             currentPiece.selected = true;//set the selected piece to a temporary variable
              selectedPiece = true;
 
            }
@@ -195,102 +198,80 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
      if (selectedPiece) {
 
-       if (currentPiece.movesPossible.get(0).size() != 0) {
-         for (int i = 0; i < (currentPiece.movesPossible.get(0).size()-1); i++) {
+       if (currentPiece.movesPossible.get(0).size() != 0) {//ensure the size is larger than 0
+         for (int i = 0; i < (currentPiece.movesPossible.get(0).size()-1); i++) {// loop through the size of the moves avaliable
 
            int tempx = currentPiece.movesPossible.get(0).get(i);
            int tempy = currentPiece.movesPossible.get(1).get(i);
+           //for each value cycled through of the move possible, set them to their respective variables
 
-           if (((xpos > (tempx-1)*63) && (xpos < (63*tempx))) && ((ypos > (tempy-1)*63) && (ypos < (63*tempy)))) {
+           if (((xpos > (tempx-1)*63) && (xpos < (63*tempx))) && ((ypos > (tempy-1)*63) && (ypos < (63*tempy)))) {// if the click is within the bounds of a possible move
 
-             if ((tempx != currentPiece.xPos) || (tempy != currentPiece.yPos)) {
+             if ((tempx != currentPiece.xPos) || (tempy != currentPiece.yPos)) {// ensure that this is not their spot,
 
-               board[currentPiece.xPos][currentPiece.yPos] = null;
-               board[tempx][tempy] = currentPiece;
+               board[currentPiece.xPos][currentPiece.yPos] = null; // set their current location on the board to null
+               board[tempx][tempy] = currentPiece; // set the clicked location to the piece moved
 
+                 if ((((tempx-1 >= 1) && (tempx+1 <= 8)) && ((tempy-1 >= 1) && (tempy+1 <= 8)))) {// if the piece is within thebounds of the board if it could jump
 
-                 if ((((tempx-1 >= 1) && (tempx+1 <= 8)) && ((tempy-1 >= 1) && (tempy+1 <= 8)))) {
-                   if (board[tempx-1][tempy-1] instanceof piece && board[tempx-1][tempy-1].side != currentPiece.side && ((currentPiece.xPos - tempx == -2) && (currentPiece.yPos - tempy == -2))) {
+                        if (board[tempx+1][tempy+1] instanceof piece && board[tempx+1][tempy+1].side != currentPiece.side && ((currentPiece.xPos - tempx == 2) && (currentPiece.yPos - tempy == 2))) {
 
-                     board[tempx-1][tempy-1].alive = false;
-                     board[tempx-1][tempy-1] = null;
-
-                     if ((((tempx-1 >= 1) && (tempx+1 <= 8)) && ((tempy-1 >= 1) && (tempy+1 <= 8)))) {
-                       if (board[tempx+1][tempy+1] instanceof piece && board[tempx+1][tempy+1].side != currentPiece.side && ((currentPiece.xPos - tempx == 2) && (currentPiece.yPos - tempy == 2))) {
-
-                         board[tempx-1][tempy-1].alive = false;
-                         board[tempx-1][tempy-1] = null;
+                          board[tempx-1][tempy-1].alive = false;
+                          board[tempx-1][tempy-1] = null;
 
                         }
-                      else if (board[tempx-1][tempy+1] instanceof piece && board[tempx-1][tempy+1].side != currentPiece.side && ((currentPiece.xPos - tempx == -2) && (currentPiece.yPos - tempy == 2))) {
+                        else if (board[tempx-1][tempy+1] instanceof piece && board[tempx-1][tempy+1].side != currentPiece.side && ((currentPiece.xPos - tempx == -2) && (currentPiece.yPos - tempy == 2))) {
 
-                        board[tempx+1][tempy-1].alive = false;
-                        board[tempx+1][tempy-1] = null;
+                          board[tempx+1][tempy-1].alive = false;
+                          board[tempx+1][tempy-1] = null;
 
-                      }
-                     else if (board[tempx+1][tempy-1] instanceof piece && board[tempx+1][tempy-1].side != currentPiece.side  && ((currentPiece.xPos - tempx == 2) && (currentPiece.yPos - tempy == -2))) {
+                        }
+                        else if (board[tempx+1][tempy-1] instanceof piece && board[tempx+1][tempy-1].side != currentPiece.side  && ((currentPiece.xPos - tempx == 2) && (currentPiece.yPos - tempy == -2))) {
 
-                       board[tempx-1][tempy+1].alive = false;
-                       board[tempx-1][tempy+1] = null;
+                          board[tempx-1][tempy+1].alive = false;
+                          board[tempx-1][tempy+1] = null;
 
-                     }
-                     else if (board[tempx-1][tempy-1] instanceof piece && board[tempx-1][tempy-1].side != currentPiece.side && ((currentPiece.xPos - tempx == -2) && (currentPiece.yPos - tempy == -2))) {
+                        }
+                        else if (board[tempx-1][tempy-1] instanceof piece && board[tempx-1][tempy-1].side != currentPiece.side && ((currentPiece.xPos - tempx == -2) && (currentPiece.yPos - tempy == -2))) {
 
-                      board[tempx+1][tempy+1].alive = false;
-                      board[tempx+1][tempy+1] = null;
+                          board[tempx+1][tempy+1].alive = false;
+                          board[tempx+1][tempy+1] = null;
+
+                        }
+
+
+                        currentPiece.xPos = currentPiece.movesPossible.get(0).get(i);
+                        currentPiece.yPos = currentPiece.movesPossible.get(1).get(i);//change it so that the piece that is chosen can be moved to one of the possible locations
+
+                        selectedPiece = false;
+                        currentPiece.selected = false;
+
+                        currentPiece.movesPossible = new ArrayList<ArrayList<Integer>>();
+                        ArrayList<Integer> xArray = new ArrayList<Integer>();
+                        ArrayList<Integer> yArray = new ArrayList<Integer>();
+
+                        currentPiece.movesPossible.add(xArray);
+                        currentPiece.movesPossible.add(yArray);
+                        break;
 
                     }
 
-
-                    }
-                  else if (board[tempx+1][tempy-1] instanceof piece && board[tempx+1][tempy-1].side != currentPiece.side && ((currentPiece.xPos - tempx == 2) && (currentPiece.yPos - tempy == -2))) {
-
-                    board[tempx+1][tempy-1].alive = false;
-                    board[tempx+1][tempy-1] = null;
-
-                  }
-                 else if (board[tempx-1][tempy+1] instanceof piece && board[tempx-1][tempy+1].side != currentPiece.side  && ((currentPiece.xPos - tempx == -2) && (currentPiece.yPos - tempy == 2))) {
-
-                   board[tempx-1][tempy+1].alive = false;
-                   board[tempx-1][tempy+1] = null;
-
-                 }
-                 else if (board[tempx+1][tempy+1] instanceof piece && board[tempx+1][tempy+1].side != currentPiece.side && ((currentPiece.xPos - tempx == 2) && (currentPiece.yPos - tempy == 2))) {
-
-                  board[tempx+1][tempy+1].alive = false;
-                  board[tempx+1][tempy+1] = null;
-
                 }
 
-                }
+            }
+          }
 
-               currentPiece.xPos = currentPiece.movesPossible.get(0).get(i);
-               currentPiece.yPos = currentPiece.movesPossible.get(1).get(i);//change it so that the piece that is chosen can be moved to one of the possible locations
+      }
 
-               selectedPiece = false;
-               currentPiece.selected = false;
 
-               currentPiece.movesPossible = new ArrayList<ArrayList<Integer>>();
-               ArrayList<Integer> xArray = new ArrayList<Integer>();
-               ArrayList<Integer> yArray = new ArrayList<Integer>();
 
-               currentPiece.movesPossible.add(xArray);
-               currentPiece.movesPossible.add(yArray);
-               break;
 
-             }
-
-           }
-
-         }
-
-       }
-
-     }
 
 
        repaint();
 	  }
+
+
 
   }
 	  //make something that checks if something is currently selected
@@ -336,13 +317,13 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
              }
            }
-	          if ((board[i][j] instanceof piece) && (board[i][j].side == 2)) {
+	          if ((board[i][j] instanceof piece) && (board[i][j].side == 2) && (board[i][j].alive == true)) {
 
 	             backg.drawImage(pieceBlack, ((i-1)*63) + 7, ((j-1)*63) + 10, 45, 45, this);
 	             //put the piece at the supposed location as black
 	           }
 
-	           if ((board[i][j] instanceof piece) && (board[i][j].side == 1)) {
+	           if ((board[i][j] instanceof piece) && (board[i][j].side == 1) && (board[i][j].alive == true)) {
 
 	              backg.drawImage(pieceRed, ((i-1)*63) + 2, ((j-1)*63) + 4, 55, 55, this);
 	          //put the piece at the supposed location as red
@@ -397,11 +378,12 @@ class piece extends checkers {
 
     public void moveTake (piece[][] board, int fXpos, int fYpos, piece p) {
 
-      if (board[fXpos+1][fYpos-1] instanceof piece && p.checkMoves(p, (fXpos+1), (fYpos-1))) {
+      if (p.side != 1 || p.king == false) {
+        if (board[fXpos+1][fYpos-1] instanceof piece && p.checkMoves(p, (fXpos+1), (fYpos-1))) {
 
-        if (board[fXpos+1][fYpos-1].side != p.side) {
+          if (board[fXpos+1][fYpos-1].side != p.side) {
 
-          if (board[fXpos+2][fYpos-2] == null) {
+            if (board[fXpos+2][fYpos-2] == null) {
 
             p.movesPossible.get(0).add(fXpos+2);//add the location to the moves possible list
             p.movesPossible.get(1).add(fYpos-2);//add the location to the moves possible list
@@ -412,6 +394,10 @@ class piece extends checkers {
 
 
       }
+
+    }
+
+    if (p.side != 2 || p.king == false) {
       if (board[fXpos+1][fYpos+1] instanceof piece && p.checkMoves(p, (fXpos+1), (fYpos+1))) {
 
         if (board[fXpos+1][fYpos+1].side != p.side) {
@@ -427,8 +413,9 @@ class piece extends checkers {
 
 
       }
+    }
 
-
+    if (p.side !=2 || p.king == false) {
       if (board[fXpos-1][fYpos-1] instanceof piece && p.checkMoves(p, (fXpos-1), (fYpos-1))) {
 
         if (board[fXpos-1][fYpos-1].side != p.side) {
@@ -445,6 +432,10 @@ class piece extends checkers {
 
       }
 
+    }
+
+    if (p.side != 1 || p.king == false) {
+
       if (board[fXpos-1][fYpos+1] instanceof piece && p.checkMoves(p, (fXpos-1), (fYpos+1))) {
 
         if (board[fXpos-1][fYpos+1].side != p.side) {
@@ -458,9 +449,8 @@ class piece extends checkers {
 
         }
 
-
       }
-
+    }
 
 
     }
@@ -657,15 +647,5 @@ class piece extends checkers {
       }
 
   }
-
-}
-
-class AI extends checkers {
-
- boolean playing = false;
-
- 
-
-
 
 }

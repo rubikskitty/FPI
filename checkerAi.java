@@ -1,48 +1,76 @@
-class ai extends player {
+class ai extends checkers {
 
-    String huPlayer = "X";
-    String aiPlayer = "O";
-    //Two strings to represent the human palyer and one to represent the ai player
-
-    public int move(ArrayList board) {
+    public int move(piece[][] board) {
 	int number = findbestMove(board);
 	return number;
     }
     //Method to move the ai returns the move
 
-    public Boolean winning(ArrayList board, String currentPlayer){
-	if ((board.get(3).toString().equals(currentPlayer) && board.get(4).toString().equals(currentPlayer) && board.get(5).toString().equals(currentPlayer)) ||
-		(board.get(0).toString().equals(currentPlayer) && board.get(1).toString().equals(currentPlayer) && board.get(2).toString().equals(currentPlayer)) ||
-		(board.get(6).toString().equals(currentPlayer) && board.get(7).toString().equals(currentPlayer) && board.get(8).toString().equals(currentPlayer)) ||
-		(board.get(0).toString().equals(currentPlayer) && board.get(3).toString().equals(currentPlayer) && board.get(6).toString().equals(currentPlayer)) ||
-		(board.get(1).toString().equals(currentPlayer) && board.get(4).toString().equals(currentPlayer) && board.get(7).toString().equals(currentPlayer)) ||
-		(board.get(2).toString().equals(currentPlayer) && board.get(5).toString().equals(currentPlayer) && board.get(8).toString().equals(currentPlayer)) ||
-		(board.get(0).toString().equals(currentPlayer) && board.get(4).toString().equals(currentPlayer) && board.get(8).toString().equals(currentPlayer)) ||
-		(board.get(2).toString().equals(currentPlayer) && board.get(4).toString().equals(currentPlayer) && board.get(6).toString().equals(currentPlayer))) {
-	    return true;
-	}
-	else {
-	    return false;
-	}
+    public boolean winning(piece[][] board, player p, piece[] redArray, piece[] blackArray){
+
+        int redCount = 0;
+
+        if (player == Ai) {
+
+          for (int i = 0; i < redArray.size(); i++) {
+            if (redArray.alive == true) {
+              redCount++;
+            }
+
+          }
+
+          if (redCount == 0) {
+            return true;
+          }
+          else {
+            return false;
+          }
+
+        }
+
+        if (player == huPlayer) {
+
+          for (int i = 0; i < blackArray.size(); i++) {
+            if (blackArray.alive == true) {
+              blackCount++;
+            }
+
+          }
+
+          if (blackCount == 0) {
+            return true;
+          }
+          else {
+            return false;
+          }
+
+        }
+
+
+
+
     }
     //Checks if one player is winning the game, returns true if yes, else false
 
-    public int findbestMove(ArrayList board) {
+    public int findbestMove(piece[][] board) {
 
 	int bestVal = 0; //The score of the best move
 	int bestMove = 0; //The location of the bestMove
 
-	for (int i = 0; i<=8; i++)
+	for (int i = 0; i < blackP.size(); i++)
 	{
-	    if (board.get(i).equals("empty"))
-	    {
+    for (int j = 0; j < blackP[i].movesPossible.get(0).size(); j++) {
 
-		board.set(i, aiPlayer); //Make the move for the ai player
+		//Make the move for the ai player
+    board[blackP[i].movesPossible.get(0).get(j)][blackP[i].movesPossible.get(1).get(j)] = blackP[i];
+    board[blackP[i].xPos][blackP[i].yPos] = null;
 
 		int moveVal = miniMax(board, 0, false);
 		//Call the minimax function to determine the best move
 
-		board.set(i, "empty"); //Take back the ai player's move
+		board[blackP[i].xPos][blackP[i].yPos] = blackP[i];
+    board[blackP[i].movesPossible.get(0).get(j)][blackP[i].movesPossible.get(1).get(j)] = null;
+
 
 		if (moveVal > bestVal) {
 		    bestMove = i;
@@ -71,12 +99,12 @@ class ai extends player {
 
     }
 
-    public int miniMax(ArrayList board, int depth, boolean isMaximizingPlayer) {
+    public int miniMax(piece[][] board, int depth, boolean isMaximizingPlayer) {
 
 	int bestVal;
 
 
-	if (winning(board, aiPlayer)) {
+	if (winning(board, ai, redP, blackP)) {
 	    return 10;
 	}
 	//If the ai is winning return 10
