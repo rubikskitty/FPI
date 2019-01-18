@@ -214,6 +214,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
                  if ((((tempx-1 >= 1) && (tempx+1 <= 8)) && ((tempy-1 >= 1) && (tempy+1 <= 8)))) {// if the piece is within thebounds of the board if it could jump
 
+                        /*
                         if (board[tempx+1][tempy+1] instanceof piece && board[tempx+1][tempy+1].side != currentPiece.side && ((currentPiece.xPos - tempx == 2) && (currentPiece.yPos - tempy == 2))) {
 
                           board[tempx-1][tempy-1].alive = false;
@@ -238,6 +239,8 @@ public class checkers extends Applet implements ActionListener, MouseListener {
                           board[tempx+1][tempy+1] = null;
 
                         }
+
+                        */
 
 
                         currentPiece.xPos = currentPiece.movesPossible.get(0).get(i);
