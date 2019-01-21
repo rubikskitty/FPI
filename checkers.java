@@ -198,84 +198,11 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
      if (selectedPiece) {
 
-       if (currentPiece.movesPossible.get(0).size() != 0) {//ensure the size is larger than 0
-         for (int i = 0; i < (currentPiece.movesPossible.get(0).size()-1); i++) {// loop through the size of the moves avaliable
+       currentPiece.makeMove(board,currentPiece,selectedPiece,xpos,ypos);
 
-           int tempx = currentPiece.movesPossible.get(0).get(i);
-           int tempy = currentPiece.movesPossible.get(1).get(i);
-           //for each value cycled through of the move possible, set them to their respective variables
-
-           if (((xpos > (tempx-1)*63) && (xpos < (63*tempx))) && ((ypos > (tempy-1)*63) && (ypos < (63*tempy)))) {// if the click is within the bounds of a possible move
-
-             if ((tempx != currentPiece.xPos) || (tempy != currentPiece.yPos)) {// ensure that this is not their spot,
-
-               board[currentPiece.xPos][currentPiece.yPos] = null; // set their current location on the board to null
-               board[tempx][tempy] = currentPiece; // set the clicked location to the piece moved
-
-                 if ((((tempx-1 >= 1) && (tempx+1 <= 8)) && ((tempy-1 >= 1) && (tempy+1 <= 8)))) {// if the piece is within thebounds of the board if it could jump
-
-                        /*
-                        if (board[tempx+1][tempy+1] instanceof piece && board[tempx+1][tempy+1].side != currentPiece.side && ((currentPiece.xPos - tempx == 2) && (currentPiece.yPos - tempy == 2))) {
-
-                          board[tempx-1][tempy-1].alive = false;
-                          board[tempx-1][tempy-1] = null;
-
-                        }
-                        else if (board[tempx-1][tempy+1] instanceof piece && board[tempx-1][tempy+1].side != currentPiece.side && ((currentPiece.xPos - tempx == -2) && (currentPiece.yPos - tempy == 2))) {
-
-                          board[tempx+1][tempy-1].alive = false;
-                          board[tempx+1][tempy-1] = null;
-
-                        }
-                        else if (board[tempx+1][tempy-1] instanceof piece && board[tempx+1][tempy-1].side != currentPiece.side  && ((currentPiece.xPos - tempx == 2) && (currentPiece.yPos - tempy == -2))) {
-
-                          board[tempx-1][tempy+1].alive = false;
-                          board[tempx-1][tempy+1] = null;
-
-                        }
-                        else if (board[tempx-1][tempy-1] instanceof piece && board[tempx-1][tempy-1].side != currentPiece.side && ((currentPiece.xPos - tempx == -2) && (currentPiece.yPos - tempy == -2))) {
-
-                          board[tempx+1][tempy+1].alive = false;
-                          board[tempx+1][tempy+1] = null;
-
-                        }
-
-                        */
-
-
-                        currentPiece.xPos = currentPiece.movesPossible.get(0).get(i);
-                        currentPiece.yPos = currentPiece.movesPossible.get(1).get(i);//change it so that the piece that is chosen can be moved to one of the possible locations
-
-                        selectedPiece = false;
-                        currentPiece.selected = false;
-
-                        currentPiece.movesPossible = new ArrayList<ArrayList<Integer>>();
-                        ArrayList<Integer> xArray = new ArrayList<Integer>();
-                        ArrayList<Integer> yArray = new ArrayList<Integer>();
-
-                        currentPiece.movesPossible.add(xArray);
-                        currentPiece.movesPossible.add(yArray);
-                        break;
-
-                    }
-
-                }
-
-            }
-          }
-
-      }
-
-
-
-
-
-
-       repaint();
 	  }
 
-
-
+    repaint();
   }
 	  //make something that checks if something is currently selected
 
@@ -299,27 +226,29 @@ public class checkers extends Applet implements ActionListener, MouseListener {
       backg.drawImage(picture, 0, 0, 504,504 ,this);
 
       for (int i = 1; i < 9; i++) {
+
 	       for (int j = 1; j < 9; j++) {
 
            if (board[i][j] instanceof piece) {
 
              if (board[i][j].selected == true) {
 
-
-               board[i][j].movesOpen(board[i][j], board);
+               board[i][j].movesOpen(board[i][j], board);// check for the possible moves
                backg.setColor(Color.red);
 
-               for (int k = 0; k < board[i][j].movesPossible.get(0).size(); k++) {
+               for (int k = 0; k < board[i][j].movesPossible.get(0).size()-1; k++) {
 
                  int xDec = (board[i][j].movesPossible.get(0).get(k)-1);
                  int yDec = (board[i][j].movesPossible.get(1).get(k)-1);
 
                  backg.fillRect( ((xDec*63)), ((yDec*63)), 63, 63);
+                 //for the possible positions draw squares there
 
                }
 
              }
            }
+
 	          if ((board[i][j] instanceof piece) && (board[i][j].side == 2) && (board[i][j].alive == true)) {
 
 	             backg.drawImage(pieceBlack, ((i-1)*63) + 7, ((j-1)*63) + 10, 45, 45, this);
@@ -330,11 +259,11 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
 	              backg.drawImage(pieceRed, ((i-1)*63) + 2, ((j-1)*63) + 4, 55, 55, this);
 	          //put the piece at the supposed location as red
-	         }
+	           }
 
 	       }
-      }
     }
+  }
 }
 
   public void update( Graphics g ) {
@@ -379,19 +308,83 @@ class piece extends checkers {
       movesPossible.add(yArray);
     }
 
+    public void makeMove (piece[][] board, piece currentPiece, boolean selectedPiece, int xpos, int ypos) {
+
+      if (currentPiece.movesPossible.get(0).size() != 0) {//ensure the size is larger than 0
+        for (int i = 0; i < (currentPiece.movesPossible.get(0).size()); i++) {// loop through the size of the moves avaliable
+
+          int tempx = currentPiece.movesPossible.get(0).get(i);
+          int tempy = currentPiece.movesPossible.get(1).get(i);
+          //for each value cycled through of the move possible, set them to their respective variables
+
+          if (((xpos > (tempx-1)*63) && (xpos < (63*tempx))) && ((ypos > (tempy-1)*63) && (ypos < (63*tempy)))) {// if the click is within the bounds of a possible move
+
+            if ((tempx != currentPiece.xPos) || (tempy != currentPiece.yPos)) {// ensure that this is not their spot,
+
+              board[currentPiece.xPos][currentPiece.yPos] = null; // set their current location on the board to null
+              board[tempx][tempy] = currentPiece; // set the clicked location to the piece moved
+
+                if ((((tempx-1 >= 1) && (tempx+1 <= 8)) && ((tempy-1 >= 1) && (tempy+1 <= 8)))) {// if the piece is within thebounds of the board if it could jump
+
+
+                       if (board[tempx+1][tempy+1] instanceof piece && board[tempx+1][tempy+1].side != currentPiece.side) {
+
+                         board[tempx-1][tempy-1].alive = false;
+                         board[tempx-1][tempy-1] = null;
+
+                       }
+                       else if (board[tempx-1][tempy+1] instanceof piece && board[tempx-1][tempy+1].side != currentPiece.side) {
+
+                         board[tempx+1][tempy-1].alive = false;
+                         board[tempx+1][tempy-1] = null;
+
+                       }
+                       else if (board[tempx+1][tempy-1] instanceof piece && board[tempx+1][tempy-1].side != currentPiece.side) {
+
+                         board[tempx-1][tempy+1].alive = false;
+                         board[tempx-1][tempy+1] = null;
+
+                       }
+                       else if (board[tempx-1][tempy-1] instanceof piece && board[tempx-1][tempy-1].side != currentPiece.side) {
+
+                         board[tempx+1][tempy+1].alive = false;
+                         board[tempx+1][tempy+1] = null;
+
+                       }
+
+
+                       currentPiece.xPos = currentPiece.movesPossible.get(0).get(i);
+                       currentPiece.yPos = currentPiece.movesPossible.get(1).get(i);//change it so that the piece that is chosen can be moved to one of the possible locations
+
+                       selectedPiece = false;
+                       currentPiece.selected = false;
+
+                       currentPiece.movesPossible = new ArrayList<ArrayList<Integer>>();
+                       ArrayList<Integer> xArray = new ArrayList<Integer>();
+                       ArrayList<Integer> yArray = new ArrayList<Integer>();
+
+                       currentPiece.movesPossible.add(xArray);
+                       currentPiece.movesPossible.add(yArray);
+
+                   }
+
+               }
+
+           }
+         }
+
+     }
+
+    }
     public void moveTake (piece[][] board, int fXpos, int fYpos, piece p) {
 
       if (p.side != 1 || p.king == false) {
         if (board[fXpos+1][fYpos-1] instanceof piece && p.checkMoves(p, (fXpos+1), (fYpos-1))) {
 
-          if (board[fXpos+1][fYpos-1].side != p.side) {
-
-            if (board[fXpos+2][fYpos-2] == null) {
+          if (board[fXpos+1][fYpos-1].side != p.side && board[fXpos+2][fYpos-2] == null) {
 
             p.movesPossible.get(0).add(fXpos+2);//add the location to the moves possible list
             p.movesPossible.get(1).add(fYpos-2);//add the location to the moves possible list
-
-          }
 
         }
 
@@ -403,14 +396,10 @@ class piece extends checkers {
     if (p.side != 2 || p.king == false) {
       if (board[fXpos+1][fYpos+1] instanceof piece && p.checkMoves(p, (fXpos+1), (fYpos+1))) {
 
-        if (board[fXpos+1][fYpos+1].side != p.side) {
-
-          if (board[fXpos+2][fYpos+2] == null) {
+        if (board[fXpos+1][fYpos+1].side != p.side && board[fXpos+2][fYpos+2] == null) {
 
             p.movesPossible.get(0).add(fXpos+2);//add the location to the moves possible list
             p.movesPossible.get(1).add(fYpos+2);//add the location to the moves possible list
-
-          }
 
         }
 
@@ -421,14 +410,10 @@ class piece extends checkers {
     if (p.side !=2 || p.king == false) {
       if (board[fXpos-1][fYpos-1] instanceof piece && p.checkMoves(p, (fXpos-1), (fYpos-1))) {
 
-        if (board[fXpos-1][fYpos-1].side != p.side) {
-
-          if (board[fXpos-2][fYpos-2] == null) {
+        if (board[fXpos-1][fYpos-1].side != p.side && board[fXpos-2][fYpos-2] == null) {
 
             p.movesPossible.get(0).add(fXpos-2);//add the location to the moves possible list
             p.movesPossible.get(1).add(fYpos-2);//add the location to the moves possible list
-
-          }
 
         }
 
@@ -441,14 +426,10 @@ class piece extends checkers {
 
       if (board[fXpos-1][fYpos+1] instanceof piece && p.checkMoves(p, (fXpos-1), (fYpos+1))) {
 
-        if (board[fXpos-1][fYpos+1].side != p.side) {
-
-          if (board[fXpos-2][fYpos+2] == null) {
+        if (board[fXpos-1][fYpos+1].side != p.side && board[fXpos-2][fYpos+2] == null) {
 
             p.movesPossible.get(0).add(fXpos-2);//add the location to the moves possible list
             p.movesPossible.get(1).add(fYpos+2);//add the location to the moves possible list
-
-          }
 
         }
 
@@ -484,14 +465,17 @@ class piece extends checkers {
 
           int difX = Math.abs(p.xPos-i);
           int difY = Math.abs(p.yPos-j);
+          //determine the difference between the observed position and the current piece positions
+
           boolean checkLane = false;
-          boolean piececnTaken = false;
+          //a variable used to stop the addition of a move to the movespossible list
 
            if ((difX == 1) && (difY ==1)) {
 
              if (((i+1) == p.xPos) && ((j-1) == p.yPos)) {
 
                if (p.side == 2 && (!king)) {
+
                  checkLane = true;//fix this up but other than that it seems to recognize open moves
 
                }
@@ -504,7 +488,9 @@ class piece extends checkers {
 
                  }
                  else {
+
                    if (((i-1 >= 1) && (i+1 <= 9)) && ((j-1 >= 1) && (j+1 <= 9))) {
+
                      if (board[i-1][j+1] == null) {
 
                        p.movesPossible.get(0).add(i-1);//add the location to the moves possible list
@@ -519,15 +505,11 @@ class piece extends checkers {
                    }
 
                   }
-                 }
+                }
 
+              }
 
-
-
-               }
-
-             }
-
+            }
 
             if (((i-1) == p.xPos) && ((j+1) == p.yPos)) {
 
@@ -544,27 +526,25 @@ class piece extends checkers {
 
                  }
 
-               else {
-                 if (((i-1 >= 1) && (i+1 <= 9)) && ((j-1 >= 1) && (j+1 <= 9))) {
+                 else {
 
-                   if (board[i+1][j-1] == null) {
+                   if (((i-1 >= 1) && (i+1 <= 9)) && ((j-1 >= 1) && (j+1 <= 9))) {
 
-                       p.movesPossible.get(0).add(i+1);//add the location to the moves possible list
-                       p.movesPossible.get(1).add(j-1);//add the location to the moves possible list
+                     if (board[i+1][j-1] == null) {
 
-                       checkLane = true;
-                   }
-                   else {
+                        p.movesPossible.get(0).add(i+1);//add the location to the moves possible list
+                        p.movesPossible.get(1).add(j-1);//add the location to the moves possible list
+
+                        checkLane = true;
+                     }
+                     else {
                      checkLane = true;//fix this up but other than that it seems to recognize open moves
-                   }
+                    }
 
-                 }
-
-
+                  }
                }
              }
-
-             }
+           }
 
              if (((i-1) == p.xPos) && ((j-1) == p.yPos)) {
 
@@ -639,8 +619,9 @@ class piece extends checkers {
 
           if (((difX == 1) && (difY == 1)) && (board[i][j] == null) && ((i != p.xPos) && (j != p.yPos)) && (checkLane == false)) {
 
-            p.movesPossible.get(0).add(i);//add the location to the moves possible list
-            p.movesPossible.get(1).add(j);//add the location to the moves possible list
+            p.movesPossible.get(0).add(i);
+            p.movesPossible.get(1).add(j);
+            //add the location to the moves possible list if it is adjacent, empty, and the right direction
 
           }
 
