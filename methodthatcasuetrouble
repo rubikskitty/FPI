@@ -1,0 +1,65 @@
+
+    public void moveTake (piece[][] board, int fXpos, int fYpos, piece p) {
+
+    if (fXpos+2 != 9 && fYpos+2 != 9) {
+
+      if (p.side != 1 || p.king == false) {
+        if (board[fXpos+1][fYpos-1] instanceof piece && p.checkMoves(p, (fXpos+1), (fYpos-1))) {
+
+          if (board[fXpos+1][fYpos-1].side != p.side && board[fXpos+2][fYpos-2] == null) {
+
+            p.movesPossible.get(0).add(fXpos+2);//add the location to the moves possible list
+            p.movesPossible.get(1).add(fYpos-2);//add the location to the moves possible list
+
+        }
+
+      }
+
+    }
+
+    if (p.side != 2 || p.king == false) {
+      if (board[fXpos+1][fYpos+1] instanceof piece && p.checkMoves(p, (fXpos+1), (fYpos+1))) {
+
+        if (board[fXpos+1][fYpos+1].side != p.side && board[fXpos+2][fYpos+2] == null) {
+
+            p.movesPossible.get(0).add(fXpos+2);//add the location to the moves possible list
+            p.movesPossible.get(1).add(fYpos+2);//add the location to the moves possible list
+
+        }
+
+      }
+    }
+
+    if (p.side !=2 || p.king == false) {
+      if (board[fXpos-1][fYpos-1] instanceof piece && p.checkMoves(p, (fXpos-1), (fYpos-1))) {
+
+        if (board[fXpos-1][fYpos-1].side != p.side && board[fXpos-2][fYpos-2] == null) {
+
+            p.movesPossible.get(0).add(fXpos-2);//add the location to the moves possible list
+            p.movesPossible.get(1).add(fYpos-2);//add the location to the moves possible list
+
+        }
+
+      }
+
+    }
+
+    if (p.side != 1 || p.king == false) {
+
+      if (board[fXpos-1][fYpos+1] instanceof piece && p.checkMoves(p, (fXpos-1), (fYpos+1))) {
+
+        if (board[fXpos-1][fYpos+1].side != p.side && board[fXpos-2][fYpos+2] == null) {
+
+            p.movesPossible.get(0).add(fXpos-2);//add the location to the moves possible list
+            p.movesPossible.get(1).add(fYpos+2);//add the location to the moves possible list
+
+        }
+
+      }
+    }
+
+  }
+    }
+
+
+    p.moveTake(board,i-1, j+1, p);
