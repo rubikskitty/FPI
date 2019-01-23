@@ -191,7 +191,6 @@ public class checkers extends Applet implements ActionListener, MouseListener {
          for (int j = 1; j < 9; j++) {
 
            if (board[i][j] instanceof piece) {
-             System.out.println("YPOS is: " + board[i][j].yPos);
 
              if (board[i][j].selected == true) {
 
@@ -247,14 +246,6 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
      if (selectedPiece) {
 
-      System.out.println("This is a x position: " + currentPiece.xPos);
-      System.out.println("This is a y position: " + currentPiece.yPos);
-
-      for (int i =0; i < currentPiece.movesPossible.get(0).size()-1; i++) {
-
-        System.out.println("Current x coordinates: " + currentPiece.movesPossible.get(0).get(i) + " , Current y coordinates: " + currentPiece.movesPossible.get(1).get(i));
-
-      }
        currentPiece.makeMove(board,currentPiece,selectedPiece,xpos,ypos);
        //this will check to see if the piece that is chosen has had one of its possible positions selected, then make moves accordingly
 
@@ -295,6 +286,16 @@ public class checkers extends Applet implements ActionListener, MouseListener {
       backg.setColor(Color.white);
       backg.fillRect( 0, 0, 1000, 1000);
       backg.drawImage(picture, 0, 0, 504,504 ,this);
+
+      int redPieceAlive = 0;
+      int blackPieceAlive = 0;
+
+      redPieceAlive = checkers.checkPieces(redP);
+      blackPieceAlive = checkers.checkPieces(blackP);
+
+      backg.setColor(Color.black);
+      backg.drawString("Red Pieces Killed: " + (12 - redPieceAlive), 600, 700);
+      backg.drawString("Blue Pieces Killed: " + (12 - blackPieceAlive), 600, 300);
 
       for (int i = 1; i < 9; i++) {
 
@@ -372,6 +373,24 @@ public class checkers extends Applet implements ActionListener, MouseListener {
   public void mouseReleased(MouseEvent e) {
   }
 
+  public static int checkPieces(piece[] pieceArray) {
+
+    int count = 0;
+
+    for (int i =0; i < pieceArray.length; i++) {
+
+      if (pieceArray[i].alive == true) {
+
+        count++;
+
+      }
+
+    }
+
+    return count;
+
+  }
+
 }
 
 class piece extends checkers {
@@ -397,7 +416,7 @@ class piece extends checkers {
       movesPossible.add(xArray);
       movesPossible.add(yArray);
     }
-    //add each sub arraylist to the moves posssilbe arraylist
+    //add each sub arraylist to the moves possible arraylist
 
     public void makeMove (piece[][] board, piece currentPiece, boolean selectedPiece, int xpos, int ypos) {
 
@@ -417,16 +436,17 @@ class piece extends checkers {
 
                 // if the piece is within thebounds of the board if it could jump
 
-                       if (board[tempx-1][tempy-1] instanceof piece && ((tempx - 2 == currentPiece.xPos) && (tempy - 2 == currentPiece.yPos))) {
+                       if (board[tempx-1][tempy-1] instanceof piece && ((tempx - 2 == currentPiece.xPos) && (tempy - 2 == currentPiece.yPos))) {//will run
 
                          if (board[tempx-1][tempy-1].side != currentPiece.side) {
+
                            board[tempx-1][tempy-1].alive = false;
                            board[tempx-1][tempy-1] = null;
 
                          }
 
                        }
-                       else if ((tempx != 8)) {
+                       if ((tempx +1 != 9)) {//runs
 
                          if (board[tempx+1][tempy-1] instanceof piece && ((tempx + 2 == currentPiece.xPos) && (tempy - 2 == currentPiece.yPos))) {
 
@@ -440,7 +460,9 @@ class piece extends checkers {
                          }
 
                        }
-                       else if ((tempy != 8)) {
+                       if ((tempy +1 != 9)) {//will not run
+
+                         System.out.println("Something Iffy");
 
                          if (board[tempx-1][tempy+1] instanceof piece && ((tempx - 2 == currentPiece.xPos) && (tempy + 2 == currentPiece.yPos))) {
 
@@ -454,7 +476,7 @@ class piece extends checkers {
                          }
 
                        }
-                       else if ((tempy != 8 && tempx != 8)) {
+                       if ((tempx +1 != 9) && (tempy +1 != 9)) {//will not run
 
                         if (board[tempx+1][tempy+1] instanceof piece && ((tempx + 2 == currentPiece.xPos) && (tempy + 2 == currentPiece.yPos))) {
 
@@ -477,7 +499,7 @@ class piece extends checkers {
 
                        }
 
-                       else if (currentPiece.yPos == 1 && currentPiece.side == 2) {
+                       if (currentPiece.yPos == 1 && currentPiece.side == 2) {
                          currentPiece.king = true;
                        }
 
