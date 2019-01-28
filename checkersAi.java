@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.awt.event.*;
 import javax.swing.*;
 import java.applet.*;
+import java.util.Arrays;
 //necessary imports
 
 /*<applet code="checkers"width=400 height=400></applet>*/
-//ensure to fix the coordiantes locations, the ypos appear to be mistaken for xpos
 
 public class checkersAi extends Applet implements ActionListener, MouseListener {
 
@@ -29,18 +29,19 @@ public class checkersAi extends Applet implements ActionListener, MouseListener 
   //have multiple image variables to represent different objects in the checkers match
 
   int x = 0;
+  int fix = 1;
   Color selected = new Color(110, 89, 31);
-  //
   boolean selectedPiece = false;
 
   piece board[][] = new piece[9][9];
   piece redP[] = new piece[12];
   piece blackP[] = new piece[12];
+
   public static player pOne = new player();
   public static player pAI = new player();
+
   public static ai otherPlay = new ai();
   player pArray[] = new player[2];
-
 
   public static piece currentPiece = new piece();
 
@@ -84,7 +85,6 @@ public class checkersAi extends Applet implements ActionListener, MouseListener 
       piece checkerEleven = new piece();
       piece checkerTwelve = new piece();
       //red checkers creation
-
 
       piece checkerThirteen = new piece();
       piece checkerFourteen = new piece();
@@ -170,7 +170,11 @@ public class checkersAi extends Applet implements ActionListener, MouseListener 
     }
 
 
+    for (int i =0; i < 12; i++) {
 
+      System.out.println("Piece at " + blackP[i].xPos + " , " + blackP[i].yPos);
+
+    }
     }
 
   public void paint( Graphics g ) {
@@ -362,20 +366,85 @@ public class checkersAi extends Applet implements ActionListener, MouseListener 
   }
 
   if (pAI.playing) {
+        System.out.println(pAI.playing);
 
     int[] array = new int[2];
-    array = otherPlay.AImove(board, redP, blackP, pArray, otherPlay);
+    boolean alive = false;
+
+    //temp array to hold the ai chosen positions
+
+    piece[] safeRed = ai.deepCop(redP);
+    piece[] safeBlack = ai.deepCop(blackP);
+    //safety piece array to ensure that the pieces at the end are not changed, this is done by creating deep copies of these respective array
+
+    piece[][] safeboard = new piece[9][9];
+    safeboard = ai.deepCopy(board);
+    //safety board so that the board doesn't change from a shallow copy. I did this since I was experiencing errors beforehand with the board positions actually changing
+
+    array = otherPlay.AImove(board, redP, blackP, pArray, otherPlay, fix);
+    fix++;
+
+    //the array will equal the returned array of the AImvoe method, 0 value is the piece index in the redP array, 1 is the index of the best move for that piece in its movespossible arraylist
+
+    //board = safeboard;// set the regular board back, this was due to the board errors was experiencing earlier
+
+    redP[array[0]].alive = true;
 
     redP[array[0]].movesOpen(redP[array[0]], board);
-    int tX = (redP[array[0]].movesPossible.get(0).get(array[1]))*63;
-    int tY = (redP[array[0]].movesPossible.get(1).get(array[1]))*63;
+    //the real piece the AI will check its possible moves, and its movesPossible array will be altered
+
+    /*
+      while (redP[array[0]].movesPossible.get(0).size() == 0 ) {
+        array[0] = (int)(Math.random() * 11);
+      }
+      */
 
 
+      int tX = (redP[array[0]].movesPossible.get(0).get(array[1]))*63;
+      int tY = (redP[array[0]].movesPossible.get(1).get(array[1]))*63;
+
+      System.out.println("Tx: " + tX/63 + " , Ty: " + tY/63 + " , piece at " + redP[array[0]].xPos + " , " + redP[array[0]].yPos);
+      System.out.println(board[tX/63][tY/63]);
+
+    //I multiplied the chosen x and y coordiantes by 63, to simulate a click on the board. This I had to do due to the nature of how I built the makeMove method
+
+
+    //debug statement to tell me the move that the AI took, I wanted to ensure that the move was connecting with the visual board move
     redP[0].makeMove(board,redP[array[0]], true, tX, tY, pArray);
+
+    //the AI will make the move it chose, and I plugged in the x adn y two values, simulating them as a click, and plugged in the piece index with the redP array
 
     pAI.playing = false;
     pOne.playing = true;
+    //changes the turns of the player
+
     otherPlay.branch = 0;
+    //sets the branch of AI to false, so each time the minimax algothrithim made a branch I coutned it, I did this as a way to try to stop stackoverflow error
+
+    /*
+
+    for (int i = 1; i < 9; i++) {
+
+      for (int j = 1; j < 9; j++) {
+
+        if(board[i][j] instanceof piece) {
+
+          System.out.println("Piece at " + board[i][j].xPos + " , " + board[i][j].yPos + "status: " + board[i][j].alive);
+
+        }
+
+      }
+
+    }
+
+
+    for (int i =0; i < 12; i++) {
+
+      System.out.println("Piece at " + blackP[i].xPos + " , " + blackP[i].yPos);
+
+    }
+
+    */  //debug print statements
 
   }
 }
@@ -421,6 +490,8 @@ public class checkersAi extends Applet implements ActionListener, MouseListener 
 
 }
 
+
+
 class piece extends checkersAi {
 
   int xPos = 0;
@@ -449,13 +520,11 @@ class piece extends checkersAi {
     public void makeMove (piece[][] tempBoard, piece currentPiece, boolean selectedPiece, int xpos, int ypos, player[] pArray) {
 
       if (currentPiece.movesPossible.get(0).size() != 0) {//ensure the size is larger than 0
-        for (int i = 0; i < (currentPiece.movesPossible.get(0).size() -1); i++) {// loop through the size of the moves avaliable
+        for (int i = 0; i < (currentPiece.movesPossible.get(0).size() ); i++) {// loop through the size of the moves avaliable
 
           int tempx = currentPiece.movesPossible.get(0).get(i);
           int tempy = currentPiece.movesPossible.get(1).get(i);
           //for each value cycled through of the move possible, set them to their respective variables
-
-
 
           if (((xpos >= (tempx-1)*63) && (xpos <= (63*tempx))) && ((ypos >= (tempy-1)*63) && (ypos <= (63*tempy)))) {// if the click is within the bounds of a possible move
 
@@ -465,7 +534,6 @@ class piece extends checkersAi {
               tempBoard[tempx][tempy] = currentPiece; // set the clicked location to the piece moved
 
               for (int j = 0; j < pArray.length -1;j++) {
-
                 if (pOne.playing) {
 
                   pOne.playing = false;
@@ -479,6 +547,7 @@ class piece extends checkersAi {
 
                 // if the piece is within thebounds of the tempBoard if it could jump
 
+                    if ((tempx >= 2) && (tempy >= 2)){
                        if (tempBoard[tempx-1][tempy-1] instanceof piece && ((tempx - 2 == currentPiece.xPos) && (tempy - 2 == currentPiece.yPos))) {//will run
 
                          if (tempBoard[tempx-1][tempy-1].side != currentPiece.side) {
@@ -489,7 +558,8 @@ class piece extends checkersAi {
                          }
 
                        }
-                       if ((tempx +1 != 9)) {//runs
+                     }
+                       if ((tempx +1 != 9) && (tempy >=2)) {//runs
 
                          if (tempBoard[tempx+1][tempy-1] instanceof piece && ((tempx + 2 == currentPiece.xPos) && (tempy - 2 == currentPiece.yPos))) {
 
@@ -503,7 +573,7 @@ class piece extends checkersAi {
                          }
 
                        }
-                       if ((tempy +1 != 9)) {//will not run
+                       if ((tempy +1 != 9) && (tempx >= 2)) {//will not run
 
 
                          if (tempBoard[tempx-1][tempy+1] instanceof piece && ((tempx - 2 == currentPiece.xPos) && (tempy + 2 == currentPiece.yPos))) {
@@ -824,9 +894,11 @@ boolean playing = false;
 
 }
 
-class ai extends player implements Cloneable {
+class ai extends player {
 
   int branch = 0;
+  piece temprArray[] = new piece[12];
+  piece tempbArray[] = new piece[12];
 
   public static int checkPieces(piece[] pieceArray) {
 
@@ -859,214 +931,235 @@ class ai extends player implements Cloneable {
     int tempX = 0;
     int tempY = 0;
     boolean kingStatus = false;
+    //variables are explained upon use
 
-    if (rob.checkPieces(redArray) > rob.checkPieces(blackArray)) {
-      return 10;
-    }
-    if (rob.checkPieces(blackArray) > rob.checkPieces(redArray)) {
-      return -10;
-    }
-
-    if (isMaximizingPlayer) {//aiplayer
-
-      bestVal = -1000;
-
-      for (int i = 0; i < redArray.length-1; i++) {
-
-        redArray[i].movesOpen(redArray[i], tumpboard);
-
-        if (redArray[i].alive) {
-
-            if (redArray[i].movesPossible.get(0).size() > 0) {
-
-              for (int j = 0; j < redArray[i].movesPossible.get(0).size()-1; j++) {
-
-                  tempX = redArray[i].xPos;
-                  tempY = redArray[i].yPos;
-                  if (redArray[i].king) {
-                    kingStatus = true;
-                  }
-
-                  redArray[i].makeMove(board, redArray[i], true, redArray[i].movesPossible.get(0).get(j) * 63, redArray[i].movesPossible.get(1).get(j) * 63, pArray);
-
-                   bestVal = Math.max(bestVal, rob.miniMax(tumpboard, redArray, blackArray, pArray, false, 1, rob));
-                   System.out.println("Best val is: " + bestVal);
-
-                   tumpboard[tempX][tempY] = redArray[i];
-                   tumpboard[redArray[i].xPos][redArray[i].yPos] = null;
-
-                   if ((redArray[i].xPos -1 != -1) && (redArray[i].yPos -1 != -1)) {
-                   if (tumpboard[redArray[i].xPos-1][redArray[i].yPos-1] instanceof piece && ((redArray[i].xPos - 2 == tempX) && (redArray[i].yPos - 2 == tempY))) {//will run
-
-                     for (int k =0; k < 11; k++) {
-
-                       if (blackArray[k].xPos ==redArray[i].xPos-1 && blackArray[k].yPos ==redArray[i].yPos-1) {
-
-                          blackArray[k].alive = true;
-                          tumpboard[redArray[i].xPos-1][redArray[i].yPos-1] = blackArray[k];
-
-
-                       }
-
-                     }
-
-                   }
-                 }
-                   if ((redArray[i].xPos +1 != 9) && (redArray[i].yPos -1 != -1)) {//runs
-
-                     if (tumpboard[redArray[i].xPos+1][redArray[i].yPos-1] == null && ((redArray[i].xPos + 2 == tempX) && (redArray[i].yPos - 2 == tempY))) {
-
-                       for (int k =0; k < 11; k++) {
-
-                         if (blackArray[k].xPos ==redArray[i].xPos+1 && blackArray[k].yPos ==redArray[i].yPos-1) {
-
-                            blackArray[k].alive = true;
-                            tumpboard[redArray[i].xPos+1][redArray[i].yPos-1] = blackArray[k];
-
-
-                         }
-
-                       }
-
-                     }
-
-                   }
-                   if ((redArray[i].yPos +1 != 9) && (redArray[i].xPos -1 != -1)) {//will not run
-
-
-                     if (tumpboard[redArray[i].xPos-1][redArray[i].yPos+1] == null && ((redArray[i].xPos - 2 == tempX) && (redArray[i].yPos + 2 == tempY))) {
-
-                       for (int k =0; k < 11; k++) {
-
-                         if (blackArray[k].xPos ==redArray[i].xPos-1 && blackArray[k].yPos ==redArray[i].yPos+1) {
-
-                            blackArray[k].alive = true;
-                            tumpboard[redArray[i].xPos-1][redArray[i].yPos+1] = blackArray[k];
-
-
-                         }
-
-                       }
-
-                     }
-
-                   }
-                   if ((redArray[i].xPos +1 != 9) && (redArray[i].yPos +1 != 9)) {//will not run
-
-                    if (tumpboard[redArray[i].xPos+1][redArray[i].yPos+1] == null && ((redArray[i].xPos + 2 == tempX) && (redArray[i].yPos + 2 == tempY))) {
-
-                      for (int k =0; k < 11; k++) {
-
-                        if (blackArray[k].xPos ==redArray[i].xPos+1 && blackArray[k].yPos ==redArray[i].yPos+1) {
-
-                           blackArray[k].alive = true;
-                           tumpboard[redArray[i].xPos+1][redArray[i].yPos+1] = blackArray[k];
-
-
-                        }
-
-                      }
-
-
-                    }
-                   }
-
-                   if (redArray[i].king && !kingStatus) {
-
-                     redArray[i].king = false;
-                   }
-
-                   redArray[i].xPos = tempX;
-                   redArray[i].yPos = tempY;
-              }
-
-            }
-
-        }
-
+     // checkers has 500,000,000,000,000,000,000 combinations, so it must be trimmed using a depth variable which stops the minimax from going too deep
+      if (rob.checkPieces(redArray) > rob.checkPieces(blackArray)) {
+        return 100;//if the robot is in an advantagous position a value of 100 will be returned
+      }
+      if (rob.checkPieces(blackArray) > rob.checkPieces(redArray)) {
+        return -100;//if the robot is in a bad position, a value of -100 is returned
       }
 
 
-    }
-    else {
+    if (depth < 200) {
+      if (isMaximizingPlayer) {//aiplayer
+        //the ai is going to take the move that maximizes the value
 
-      bestVal = 1000;
+        bestVal = -10000;
+        //the best value is set low in order to ensure that a new value is chosen
 
-      for (int i = 0; i < blackArray.length-1; i++) {
+        for (int i = 0; i < 11; i++) {
+          //cycle through all of the pieces it can move
 
-        blackArray[i].movesOpen(blackArray[i], tumpboard);
+          redArray[i].movesOpen(redArray[i], tumpboard);
+          //check the moves that are open for the specific piece on the temporary board
 
-        if (blackArray[i].alive) {
+          if (redArray[i].alive) {
+            //make sure the piece is alive
 
-            if (blackArray[i].movesPossible.get(0).size() > 0) {
+              if (redArray[i].movesPossible.get(0).size() > 0) {
+                //ensure that the piece has avaliable moves
 
-              for (int j = 0; j < blackArray[i].movesPossible.get(0).size()-1; j++) {
+                for (int j = 0; j < redArray[i].movesPossible.get(0).size()-1; j++) {
+                    //cycle through all of the moves that the selected piece can take
 
-                tempX = blackArray[i].xPos;
-                tempY = blackArray[i].yPos;
-                if (blackArray[i].king) {
-                  kingStatus = true;
-                }
+                    tempX = redArray[i].xPos;
+                    tempY = redArray[i].yPos;
+                    //save its current x and y postitions
 
-                  blackArray[i].makeMove(tumpboard, blackArray[i], true, blackArray[i].movesPossible.get(0).get(j) * 63, blackArray[i].movesPossible.get(1).get(j) * 63, pArray);
+                    if (redArray[i].king) {
+                      kingStatus = true;
+                    }
+                    //check to see if it is a king
 
-                   bestVal = Math.max(bestVal,rob.miniMax(tumpboard, redArray,blackArray, pArray, true, 1, rob));
+                    redArray[i].makeMove(board, redArray[i], true, redArray[i].movesPossible.get(0).get(j) * 63, redArray[i].movesPossible.get(1).get(j) * 63, pArray);
+                    //make the move that is currently selected
 
-                   tumpboard[tempX][tempY] = blackArray[i];
-                   tumpboard[blackArray[i].xPos][blackArray[i].yPos] = null;
+                    depth++;//fix this
 
-                  if ((blackArray[i].xPos -1 != -1) && (blackArray[i].yPos -1 != -1)) {
-                   if (tumpboard[blackArray[i].xPos-1][blackArray[i].yPos-1] == null && ((blackArray[i].xPos - 2 == tempX) && (blackArray[i].yPos - 2 == tempY))) {//will run
+                     bestVal = Math.max(bestVal, rob.miniMax(tumpboard, redArray, blackArray, pArray, false, depth, rob));
+                     //evaluate that move with minimax, assign it to the value
 
-                     for (int k =0; k < 11; k++) {
+                     //System.out.println("Best val is: " + bestVal);
+                     //print out the value for debugging
 
-                       if (redArray[k].xPos ==blackArray[i].xPos-1 && redArray[k].yPos ==blackArray[i].yPos-1) {
+                     tumpboard[tempX][tempY] = redArray[i];
+                     tumpboard[redArray[i].xPos][redArray[i].yPos] = null;
+                     //return the move
 
-                          redArray[k].alive = true;
-                          tumpboard[blackArray[i].xPos-1][blackArray[i].yPos-1] = redArray[k];
+                     if ((redArray[i].xPos >=2) && (redArray[i].yPos >= 2)) {
+                     if (tumpboard[redArray[i].xPos-1][redArray[i].yPos-1] instanceof piece && ((redArray[i].xPos - 2 == tempX) && (redArray[i].yPos - 2 == tempY))) {//will run
 
+                       for (int k =0; k < 11; k++) {
+
+                         if (blackArray[k].xPos ==redArray[i].xPos-1 && blackArray[k].yPos ==redArray[i].yPos-1) {
+
+                            blackArray[k].alive = true;
+                            tumpboard[redArray[i].xPos-1][redArray[i].yPos-1] = blackArray[k];
+
+
+                         }
 
                        }
 
                      }
-
-
                    }
-                 }
-                   if ((blackArray[i].xPos +1 != 9) && (blackArray[i].yPos -1 != -1)) {//runs
+                     if ((redArray[i].xPos +1 != 9) && (redArray[i].yPos >= 2)) {//runs
 
-                     if (tumpboard[blackArray[i].xPos+1][blackArray[i].yPos-1] == null && ((blackArray[i].xPos + 2 == tempX) && (blackArray[i].yPos - 2 == tempY))) {
-
+                       if (tumpboard[redArray[i].xPos+1][redArray[i].yPos-1] == null && ((redArray[i].xPos + 2 == tempX) && (redArray[i].yPos - 2 == tempY))) {
 
                          for (int k =0; k < 11; k++) {
 
-                           if (redArray[k].xPos ==blackArray[i].xPos+1 && redArray[k].yPos ==blackArray[i].yPos-1) {
+                           if (blackArray[k].xPos ==redArray[i].xPos+1 && blackArray[k].yPos ==redArray[i].yPos-1) {
 
-                              redArray[k].alive = true;
-                              tumpboard[blackArray[i].xPos+1][blackArray[i].yPos-1] = redArray[k];
+                              blackArray[k].alive = true;
+                              tumpboard[redArray[i].xPos+1][redArray[i].yPos-1] = blackArray[k];
 
 
                            }
 
                          }
 
+                       }
+
+                     }
+                     if ((redArray[i].yPos +1 != 9) && (redArray[i].xPos >= 2)) {//will not run
+
+
+                       if (tumpboard[redArray[i].xPos-1][redArray[i].yPos+1] == null && ((redArray[i].xPos - 2 == tempX) && (redArray[i].yPos + 2 == tempY))) {
+
+                         for (int k =0; k < 11; k++) {
+
+                           if (blackArray[k].xPos ==redArray[i].xPos-1 && blackArray[k].yPos ==redArray[i].yPos+1) {
+
+                              blackArray[k].alive = true;
+                              tumpboard[redArray[i].xPos-1][redArray[i].yPos+1] = blackArray[k];
+
+
+                           }
+
+                         }
 
                        }
 
                      }
+                     if ((redArray[i].xPos +1 != 9) && (redArray[i].yPos +1 != 9)) {//will not run
 
-                   }
-                   if ((blackArray[i].yPos +1 != 9) && (blackArray[i].xPos -1 != -1)) {//will not run
+                      if (tumpboard[redArray[i].xPos+1][redArray[i].yPos+1] == null && ((redArray[i].xPos + 2 == tempX) && (redArray[i].yPos + 2 == tempY))) {
+
+                        for (int k =0; k < 11; k++) {
+
+                          if (blackArray[k].xPos ==redArray[i].xPos+1 && blackArray[k].yPos ==redArray[i].yPos+1) {
+
+                             blackArray[k].alive = true;
+                             tumpboard[redArray[i].xPos+1][redArray[i].yPos+1] = blackArray[k];
+
+                          }
+
+                        }
 
 
-                     if (tumpboard[blackArray[i].xPos-1][blackArray[i].yPos+1] == null && ((blackArray[i].xPos - 2 == tempX) && (blackArray[i].yPos + 2 == tempY))) {
+                      }
+                     }
+                     //return any taking of pieces on the part of the red side
+
+                     if (redArray[i].king && !kingStatus) {
+
+                       redArray[i].king = false;
+                     }
+                     //if the piece is a king but gained it just now, remove the kingship
+
+                     redArray[i].xPos = tempX;
+                     redArray[i].yPos = tempY;
+                     //set the recorded x,y coordiantes to the former ones
+
+                }
+
+              }
+
+          }
+
+        }
+
+
+      }
+      else {
+
+        bestVal = 10000;
+        //set to a very high value so that it will immediately be replaced
+
+        for (int i = 0; i < 11; i++) {
+          //cycle through the array of black pieces
+
+          blackArray[i].movesOpen(blackArray[i], tumpboard);
+          //check for moves possible on the temporary board
+
+          if (blackArray[i].alive) {
+            //check to see if the piece is alive
+
+              if (blackArray[i].movesPossible.get(0).size() > 0) {
+                //ensure the piece can move
+
+                for (int j = 0; j < blackArray[i].movesPossible.get(0).size(); j++) {
+                  //cycle through the possible moves
+
+                  tempX = blackArray[i].xPos;
+                  tempY = blackArray[i].yPos;
+                  //set the pieces current coordinates to temporary variables
+
+                  if (blackArray[i].king) {
+                    kingStatus = true;
+                  }
+                  //if the piece is a king set the status
+
+                    blackArray[i].makeMove(tumpboard, blackArray[i], true, blackArray[i].movesPossible.get(0).get(j) * 63, blackArray[i].movesPossible.get(1).get(j) * 63, pArray);
+                    //make the move based on the chosen cycled index
+
+                    depth++;//fix this
+
+                     bestVal = Math.min(bestVal,rob.miniMax(tumpboard, redArray,blackArray, pArray, true, depth, rob));
+                     //chose the humans likely move, the human will liekly chose the minimizing move, which is the lowest value
+
+                     tumpboard[tempX][tempY] = blackArray[i];
+                     tumpboard[blackArray[i].xPos][blackArray[i].yPos] = null;
+                     //reset the move back to previous position
+
+
+                    if ((blackArray[i].xPos >= 2) && (blackArray[i].yPos >= 2)) {
+                     if (tumpboard[blackArray[i].xPos-1][blackArray[i].yPos-1] == null && ((blackArray[i].xPos - 2 == tempX) && (blackArray[i].yPos - 2 == tempY))) {//will run
 
                        for (int k =0; k < 11; k++) {
 
-                         if (redArray[k].xPos ==blackArray[i].xPos+1 && redArray[k].yPos ==blackArray[i].yPos+1) {
+                         if (redArray[k].xPos ==blackArray[i].xPos-1 && redArray[k].yPos ==blackArray[i].yPos-1) {
 
                             redArray[k].alive = true;
-                            tumpboard[blackArray[i].xPos-1][blackArray[i].yPos+1] = redArray[k];
+                            tumpboard[blackArray[i].xPos-1][blackArray[i].yPos-1] = redArray[k];
+
+
+                         }
+
+                       }
+
+
+                     }
+                   }
+                     if ((blackArray[i].xPos +1 != 9) && (blackArray[i].yPos >= 2)) {//runs
+
+                       if (tumpboard[blackArray[i].xPos+1][blackArray[i].yPos-1] == null && ((blackArray[i].xPos + 2 == tempX) && (blackArray[i].yPos - 2 == tempY))) {
+
+
+                           for (int k =0; k < 11; k++) {
+
+                             if (redArray[k].xPos ==blackArray[i].xPos+1 && redArray[k].yPos ==blackArray[i].yPos-1) {
+
+                                redArray[k].alive = true;
+                                tumpboard[blackArray[i].xPos+1][blackArray[i].yPos-1] = redArray[k];
+
+
+                             }
+
+                           }
 
 
                          }
@@ -1074,60 +1167,156 @@ class ai extends player implements Cloneable {
                        }
 
                      }
+                     if ((blackArray[i].yPos +1 != 9) && (blackArray[i].xPos >= 2)) {//will not run
 
-                   }
-                   if ((blackArray[i].xPos +1 != 9) && (blackArray[i].yPos +1 != 9)) {//will not run
 
-                    if (tumpboard[blackArray[i].xPos+1][blackArray[i].yPos+1] == null && ((blackArray[i].xPos + 2 == tempX) && (blackArray[i].yPos + 2 == tempY))) {
+                       if (tumpboard[blackArray[i].xPos-1][blackArray[i].yPos+1] == null && ((blackArray[i].xPos - 2 == tempX) && (blackArray[i].yPos + 2 == tempY))) {
 
-                      for (int k =0; k < 11; k++) {
+                         for (int k =0; k < 11; k++) {
 
-                        if (redArray[k].xPos ==blackArray[i].xPos+1 && redArray[k].yPos ==blackArray[i].yPos+1) {
+                           if (redArray[k].xPos ==blackArray[i].xPos+1 && redArray[k].yPos ==blackArray[i].yPos+1) {
 
-                           redArray[k].alive = true;
-                           tumpboard[blackArray[i].xPos+1][blackArray[i].yPos+1] = redArray[k];
+                              redArray[k].alive = true;
+                              tumpboard[blackArray[i].xPos-1][blackArray[i].yPos+1] = redArray[k];
 
+
+                           }
+
+                         }
+
+                       }
+
+                     }
+                     if ((blackArray[i].xPos +1 != 9) && (blackArray[i].yPos +1 != 9)) {//will not run
+
+                      if (tumpboard[blackArray[i].xPos+1][blackArray[i].yPos+1] == null && ((blackArray[i].xPos + 2 == tempX) && (blackArray[i].yPos + 2 == tempY))) {
+
+                        for (int k =0; k < 11; k++) {
+
+                          if (redArray[k].xPos ==blackArray[i].xPos+1 && redArray[k].yPos ==blackArray[i].yPos+1) {
+
+                             redArray[k].alive = true;
+                             tumpboard[blackArray[i].xPos+1][blackArray[i].yPos+1] = redArray[k];
+
+
+                          }
 
                         }
 
+
                       }
+                     }
+                     //reset any pieces that were killed from the move
+
+                     if (blackArray[i].king && !kingStatus) {
+
+                       blackArray[i].king = false;
+                     }
+                     //if the piece wasn't a king beforehand and is a king now, reset the status
 
 
-                    }
-                   }
+                      blackArray[i].xPos = tempX;
+                      blackArray[i].yPos = tempY;
+                      //set the recorded x and y positions back to the original
 
-                   if (blackArray[i].king && !kingStatus) {
-
-                     blackArray[i].king = false;
-                   }
-
-                   blackArray[i].xPos = tempX;
-                   blackArray[i].yPos = tempY;
+                }
 
               }
 
-            }
+          }
 
         }
 
       }
 
+
       return bestVal;
     }
 
 
-  public int[] AImove(piece[][] tumpboard, piece[] redArray, piece[] blackArray, player[] pArray, ai rob) {
+    //C
+  public static piece[][] deepCopy(piece[][] original) {
+      if (original == null) {
+          return null;
+      }
+
+      final piece[][] result = new piece[original.length][];
+      for (int i = 1; i < original.length; i++) {
+          result[i] = Arrays.copyOf(original[i], original[i].length);
+          // For Java versions prior to Java 6 use the next:
+          // System.arraycopy(original[i], 0, result[i], 0, original[i].length);
+      }
+      return result;
+  }//a method to deep copy piece[][] board
+
+  public static piece[] deepCop(piece[] original) {
+      if (original == null) {
+          return null;
+      }
+
+      piece[] result = new piece[original.length];
+
+          result = Arrays.copyOf(original, original.length);
+          // For Java versions prior to Java 6 use the next:
+          // System.arraycopy(original[i], 0, result[i], 0, original[i].length);
+
+      return result;
+  }//a method used to deep copy piece[] arrays
+
+  public int[] AImove(piece[][] tumpboard, piece[] redArray, piece[] blackArray, player[] pArray, ai rob, int time) {
 
     piece tempBoard[][] = new piece[9][9];
+    tempBoard = rob.deepCopy(tumpboard);
+    //first a deep copy of the board is created, and it is tempBoard
 
-    System.arraycopy( tumpboard, 0, tempBoard, 0, tumpboard.length );
 
-    piece temprArray[] = new piece[12];
+    //rob.temprArray = rob.deepCop(redArray);
+    //rob.tempbArray = rob.deepCop(blackArray);
+   if (time == 1) {
+    for (int i = 1; i < 9; i++) {
 
-    System.arraycopy( redArray, 0, temprArray, 0, redArray.length );
-    piece tempbArray[] = new piece[12];
+      for (int j = 1; j < 9;j++) {
 
-    System.arraycopy( blackArray, 0, tempbArray, 0, redArray.length );
+        if (tempBoard[i][j] instanceof piece) {
+
+           System.out.println("Piece at " + tempBoard[i][j].xPos + " , " + tempBoard[i][j].yPos + "status: " + tempBoard[i][j].alive);
+
+            if (tempBoard[i][j].side == 1) {
+
+              for (int k = 0; k < 11; k++) {
+
+                if (rob.temprArray[k] == null) {
+                  rob.temprArray[k] = tempBoard[i][j];
+                  System.out.println(k);
+                  break;
+
+                }
+              }
+
+            }
+            if (tempBoard[i][j].side == 2) {
+
+              for (int k = 0; k < 11; k++) {
+
+                if (rob.tempbArray[k] == null) {
+                  rob.tempbArray[k] = tempBoard[i][j];
+                  break;
+
+                }
+              }
+
+            }
+        }
+
+      }
+    }
+  }
+
+
+
+    //two deep copied arrays of the black and red piece arrays
+
+    //the issue must be that the two deep copied arrays are not tied to the tempboard
 
     int bestThings[] = new int[2];
     int bestVal = -1000;
@@ -1135,61 +1324,76 @@ class ai extends player implements Cloneable {
     int depth = 0;
     int tempX = 0;
     int tempY = 0;
+    int deep = 0;
     boolean kingStatus = false;
+    //variables, that wil be explained with use
 
-    for (int i = 0; i < temprArray.length-1; i++) {
+    for (int i = 0; i < 11; i++) {
+      //cycle through the red pieces
 
-      temprArray[i].movesOpen(temprArray[i], tempBoard);
+      rob.temprArray[i].movesOpen(rob.temprArray[i], tempBoard);
+      //check the moves for the current cycled piece on the temporary board
 
-      if (temprArray[i].alive) {
+      if (rob.temprArray[i].alive) {
+        //make sure the piece is not dead
 
           if (temprArray[i].movesPossible.get(0).size() > 0) {
+            //ensure that it has moves avaliable
 
-            for (int j = 0; j < temprArray[i].movesPossible.get(0).size()-1; j++) {
+            for (int j = 0; j < rob.temprArray[i].movesPossible.get(0).size()-1; j++) {
+              //cycle through all of the avaliable moves to the piece in question
 
-              System.out.println("The avaliable moves are: " + temprArray[i].movesPossible.get(0).get(j) + " , " + temprArray[i].movesPossible.get(1).get(j) );
+              System.out.println("The avaliable moves are: " + rob.temprArray[i].movesPossible.get(0).get(j) + " , " + rob.temprArray[i].movesPossible.get(1).get(j) );
+              //print out coordinates, for debug reasons
 
-                tempX = temprArray[i].xPos;
-                tempY = temprArray[i].yPos;
+                tempX = rob.temprArray[i].xPos;
+                tempY = rob.temprArray[i].yPos;
+                // save the current xpos and ypos of the specific piece
+
                 if (redArray[i].king) {
                   kingStatus = true;
                 }
+                //check if the piece is a king, this was implemneted due to my issues caused by random kinging occuring
 
-                temprArray[i].makeMove(tempBoard, temprArray[i], true, temprArray[i].movesPossible.get(0).get(j) * 63, temprArray[i].movesPossible.get(1).get(j) * 63, pArray);
+                rob.temprArray[i].makeMove(tempBoard, rob.temprArray[i], true, rob.temprArray[i].movesPossible.get(0).get(j) * 63, rob.temprArray[i].movesPossible.get(1).get(j) * 63, pArray);
+                //make the move on the current position that is chosen
 
-                 currentVal = rob.miniMax(tempBoard, temprArray, tempbArray, pArray, false, depth+1, rob);
+                 currentVal = rob.miniMax(tempBoard, rob.temprArray, rob.tempbArray, pArray, false, deep++, rob);
+                 //the move will be sent to minimax, it will try to predict the following moves, and use that to select the best moved
+                 //minimax is going to return a value
+                 deep = 0;
 
-                //return move
-                tempBoard[tempX][tempY] = temprArray[i];
-                tempBoard[temprArray[i].xPos][temprArray[i].yPos] = null;
+                tempBoard[tempX][tempY] = rob.temprArray[i];
+                tempBoard[rob.temprArray[i].xPos][rob.temprArray[i].yPos] = null;
+                //return the positions on the temporary board
 
-                if ((temprArray[i].xPos -1 != -1) && (temprArray[i].yPos -1 != -1)) {
-                if (tempBoard[temprArray[i].xPos-1][temprArray[i].yPos-1] instanceof piece && ((temprArray[i].xPos - 2 == tempX) && (temprArray[i].yPos - 2 == tempY))) {//will run
+                if ((rob.temprArray[i].xPos >= 2) && (rob.temprArray[i].yPos >= 2)) {
+                  if (tempBoard[rob.temprArray[i].xPos-1][rob.temprArray[i].yPos-1] instanceof piece && ((rob.temprArray[i].xPos - 2 == tempX) && (rob.temprArray[i].yPos - 2 == tempY))) {//will run
 
                   for (int k =0; k < 11; k++) {
 
-                    if (tempbArray[k].xPos ==temprArray[i].xPos-1 && tempbArray[k].yPos ==temprArray[i].yPos-1) {
+                    if (rob.tempbArray[k].xPos ==rob.temprArray[i].xPos-1 && rob.tempbArray[k].yPos ==rob.temprArray[i].yPos-1) {
 
-                       tempbArray[k].alive = true;
-                       tempBoard[temprArray[i].xPos-1][temprArray[i].yPos-1] = tempbArray[k];
+                       rob.tempbArray[k].alive = true;
+                       tempBoard[rob.temprArray[i].xPos-1][rob.temprArray[i].yPos-1] = rob.tempbArray[k];
 
 
                     }
 
                   }
 
+                 }
                 }
-                }
-                if ((temprArray[i].xPos +1 != 9) && (temprArray[i].yPos -1 != -1)) {//runs
+                if ((rob.temprArray[i].xPos +1 != 9) && (rob.temprArray[i].yPos >= 2)) {//runs
 
-                  if (tempBoard[temprArray[i].xPos+1][temprArray[i].yPos-1] == null && ((temprArray[i].xPos + 2 == tempX) && (temprArray[i].yPos - 2 == tempY))) {
+                  if (tempBoard[rob.temprArray[i].xPos+1][rob.temprArray[i].yPos-1] == null && ((rob.temprArray[i].xPos + 2 == tempX) && (rob.temprArray[i].yPos - 2 == tempY))) {
 
                     for (int k =0; k < 11; k++) {
 
-                      if (tempbArray[k].xPos ==temprArray[i].xPos+1 && tempbArray[k].yPos ==temprArray[i].yPos-1) {
+                      if (rob.tempbArray[k].xPos ==rob.temprArray[i].xPos+1 && rob.tempbArray[k].yPos ==rob.temprArray[i].yPos-1) {
 
-                         tempbArray[k].alive = true;
-                         tempBoard[temprArray[i].xPos+1][temprArray[i].yPos-1] = tempbArray[k];
+                         rob.tempbArray[k].alive = true;
+                         tempBoard[rob.temprArray[i].xPos+1][rob.temprArray[i].yPos-1] = rob.tempbArray[k];
 
 
                       }
@@ -1199,17 +1403,17 @@ class ai extends player implements Cloneable {
                   }
 
                 }
-                if ((temprArray[i].yPos +1 != 9) && (temprArray[i].xPos -1 != -1)) {//will not run
+                if ((rob.temprArray[i].yPos +1 != 9) && (rob.temprArray[i].xPos >= 2)) {//will not run
 
 
-                  if (tempBoard[temprArray[i].xPos-1][temprArray[i].yPos+1] == null && ((temprArray[i].xPos - 2 == tempX) && (temprArray[i].yPos + 2 == tempY))) {
+                  if (tempBoard[rob.temprArray[i].xPos-1][rob.temprArray[i].yPos+1] == null && ((rob.temprArray[i].xPos - 2 == tempX) && (rob.temprArray[i].yPos + 2 == tempY))) {
 
                     for (int k =0; k < 11; k++) {
 
-                      if (tempbArray[k].xPos ==temprArray[i].xPos-1 && tempbArray[k].yPos ==temprArray[i].yPos+1) {
+                      if (rob.tempbArray[k].xPos ==rob.temprArray[i].xPos-1 && rob.tempbArray[k].yPos ==rob.temprArray[i].yPos+1) {
 
-                         tempbArray[k].alive = true;
-                         tempBoard[temprArray[i].xPos-1][temprArray[i].yPos+1] = tempbArray[k];
+                         rob.tempbArray[k].alive = true;
+                         tempBoard[rob.temprArray[i].xPos-1][rob.temprArray[i].yPos+1] = rob.tempbArray[k];
 
 
                       }
@@ -1219,16 +1423,16 @@ class ai extends player implements Cloneable {
                   }
 
                 }
-                if ((temprArray[i].xPos +1 != 9) && (temprArray[i].yPos +1 != 9)) {//will not run
+                if ((rob.temprArray[i].xPos +1 != 9) && (rob.temprArray[i].yPos +1 != 9)) {//will not run
 
-                 if (tempBoard[temprArray[i].xPos+1][temprArray[i].yPos+1] == null && ((temprArray[i].xPos + 2 == tempX) && (temprArray[i].yPos + 2 == tempY))) {
+                 if (tempBoard[rob.temprArray[i].xPos+1][rob.temprArray[i].yPos+1] == null && ((rob.temprArray[i].xPos + 2 == tempX) && (rob.temprArray[i].yPos + 2 == tempY))) {
 
                    for (int k =0; k < 11; k++) {
 
-                     if (tempbArray[k].xPos ==temprArray[i].xPos+1 && tempbArray[k].yPos ==temprArray[i].yPos+1) {
+                     if (rob.tempbArray[k].xPos ==rob.temprArray[i].xPos+1 && rob.tempbArray[k].yPos ==rob.temprArray[i].yPos+1) {
 
-                        tempbArray[k].alive = true;
-                        tempBoard[temprArray[i].xPos+1][temprArray[i].yPos+1] = tempbArray[k];
+                        rob.tempbArray[k].alive = true;
+                        tempBoard[rob.temprArray[i].xPos+1][rob.temprArray[i].yPos+1] = rob.tempbArray[k];
 
 
                      }
@@ -1238,18 +1442,19 @@ class ai extends player implements Cloneable {
 
                  }
                 }
+                //if statements to fix the board and pieces that may have died
 
 
-                if (temprArray[i].king && !kingStatus) {
+                if (rob.temprArray[i].king && !kingStatus) {
 
-                  temprArray[i].king = false;
-                }
-                temprArray[i].xPos = tempX;
-                temprArray[i].yPos = tempY;
+                  rob.temprArray[i].king = false;
+                }//reset the piece if it has became a king
 
+                rob.temprArray[i].xPos = tempX;
+                rob.temprArray[i].yPos = tempY;
+                //reset the recorded coordinates of the piece chosen, back to its former position
 
-
-                if (currentVal > bestVal && temprArray[i].movesPossible.size() > 0) {
+                if (currentVal > bestVal && rob.temprArray[i].movesPossible.size() > 0) {
 
                   bestVal = currentVal;
 
@@ -1257,6 +1462,7 @@ class ai extends player implements Cloneable {
                   bestThings[1] = j;
 
                 }
+                //if the move is of more worth than the best move value, save the piece index, and the move index, also set the value to the highest value
 
 
 
@@ -1268,11 +1474,13 @@ class ai extends player implements Cloneable {
 
     }
 
-    while ( temprArray[bestThings[0]].movesPossible.size() == 0 && temprArray[bestThings[0]].alive) {
+    /*
+    while ( rob.temprArray[bestThings[0]].movesPossible.size() == 0 && rob.temprArray[bestThings[0]].alive) {
 
       bestThings[0] = (int)(bestThings[0]*Math.random()*12+1);
-    }
+    }//code added in the prevent the movement of something due a non changed value of bestThings
 
+    */
     return bestThings ;
 
   }

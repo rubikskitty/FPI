@@ -12,7 +12,7 @@ import java.applet.*;
 //necessary imports
 
 /*<applet code="checkers"width=400 height=400></applet>*/
-//ensure to fix the coordiantes locations, the ypos appear to be mistaken for xpos
+//ensure to fix the coordinates locations, the ypos appear to be mistaken for xpos
 
 public class checkers extends Applet implements ActionListener, MouseListener {
 
@@ -87,7 +87,6 @@ public class checkers extends Applet implements ActionListener, MouseListener {
       piece checkerEleven = new piece();
       piece checkerTwelve = new piece();
       //red checkers creation
-
 
       piece checkerThirteen = new piece();
       piece checkerFourteen = new piece();
@@ -205,13 +204,13 @@ public class checkers extends Applet implements ActionListener, MouseListener {
          if (((xpos > (i-1)*63) && (xpos < (63*i))) && ((ypos > (j-1)*63) && (ypos < (63*j)))) {
 
            if (board[i][j] instanceof piece) {
+             //ensure the value if a piece
 
              /*
              currentPiece = board[i][j];
              currentPiece.selected = true;//set the selected piece to a temporary variable
              selectedPiece = true;
-             */
-
+             *///debug code
 
              if (pOne.playing && pOne.side == board[i][j].side) {
 
@@ -227,13 +226,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
                  selectedPiece = true;
 
               }
-              else if (pAI.playing && pAI.side == board[i][j].side) {
-
-                currentPiece = board[i][j];
-                currentPiece.selected = true;//set the selected piece to a temporary variable
-                selectedPiece = true;
-
-               }
+               //if the location is a piece of the same colour, set that piece to selection
 
            }
            //it will only allow the selection of pieces during a certain players turn
@@ -372,6 +365,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
 
 	       }
     }
+    //draw everything on the board, possible positions and pieces
   }
 }
 
@@ -409,6 +403,7 @@ public class checkers extends Applet implements ActionListener, MouseListener {
     return count;
 
   }
+  //checks the amount of pieces alive on for the given array of pieces, returns a value
 
 }
 
@@ -464,85 +459,87 @@ class piece extends checkers {
                   pArray[j].playing = true;
                 }
               }
-
-                // if the piece is within thebounds of the board if it could jump
-
-                       if (board[tempx-1][tempy-1] instanceof piece && ((tempx - 2 == currentPiece.xPos) && (tempy - 2 == currentPiece.yPos))) {//will run
-
-                         if (board[tempx-1][tempy-1].side != currentPiece.side) {
-
-                           board[tempx-1][tempy-1].alive = false;
-                           board[tempx-1][tempy-1] = null;
-
-                         }
-
-                       }
-                       if ((tempx +1 != 9)) {//runs
-
-                         if (board[tempx+1][tempy-1] instanceof piece && ((tempx + 2 == currentPiece.xPos) && (tempy - 2 == currentPiece.yPos))) {
-
-                           if (board[tempx+1][tempy-1].side != currentPiece.side) {
-
-                             board[tempx+1][tempy-1].alive = false;
-                             board[tempx+1][tempy-1] = null;
-
-                           }
-
-                         }
-
-                       }
-                       if ((tempy +1 != 9)) {//will not run
+              //changes the status of the turns, based on who is playing currently
 
 
-                         if (board[tempx-1][tempy+1] instanceof piece && ((tempx - 2 == currentPiece.xPos) && (tempy + 2 == currentPiece.yPos))) {
+             if (board[tempx-1][tempy-1] instanceof piece && ((tempx - 2 == currentPiece.xPos) && (tempy - 2 == currentPiece.yPos))) {//will run
 
-                           if (board[tempx-1][tempy+1].side != currentPiece.side) {
+               if (board[tempx-1][tempy-1].side != currentPiece.side) {
 
-                             board[tempx-1][tempy+1].alive = false;
-                             board[tempx-1][tempy+1] = null;
+                 board[tempx-1][tempy-1].alive = false;
+                 board[tempx-1][tempy-1] = null;
 
-                           }
+               }
 
-                         }
+             }
+             if ((tempx +1 != 9)) {//runs
 
-                       }
-                       if ((tempx +1 != 9) && (tempy +1 != 9)) {//will not run
+               if (board[tempx+1][tempy-1] instanceof piece && ((tempx + 2 == currentPiece.xPos) && (tempy - 2 == currentPiece.yPos))) {
 
-                        if (board[tempx+1][tempy+1] instanceof piece && ((tempx + 2 == currentPiece.xPos) && (tempy + 2 == currentPiece.yPos))) {
+                 if (board[tempx+1][tempy-1].side != currentPiece.side) {
 
-                         if (board[tempx+1][tempy+1].side != currentPiece.side) {
+                   board[tempx+1][tempy-1].alive = false;
+                   board[tempx+1][tempy-1] = null;
 
-                           board[tempx+1][tempy+1].alive = false;
-                           board[tempx+1][tempy+1] = null;
+                 }
 
-                          }
+               }
 
-                        }
-                      }
-
-
-                       currentPiece.xPos = currentPiece.movesPossible.get(0).get(i);
-                       currentPiece.yPos = currentPiece.movesPossible.get(1).get(i);//change it so that the piece that is chosen can be moved to one of the possible locations
-
-                       if (currentPiece.yPos == 8 && currentPiece.side == 1) {
-                         currentPiece.king = true;
-
-                       }
-
-                       if (currentPiece.yPos == 1 && currentPiece.side == 2) {
-                         currentPiece.king = true;
-                       }
-
-                       selectedPiece = false;
-                       currentPiece.selected = false;
-
-                       currentPiece.movesPossible = new ArrayList<ArrayList<Integer>>();
-                       ArrayList<Integer> xArray = new ArrayList<Integer>();
-                       ArrayList<Integer> yArray = new ArrayList<Integer>();
+             }
+             if ((tempy +1 != 9)) {//will not run
 
 
-                       currentPiece.movesPossible.add(xArray);
-                       currentPiece.movesPossible.add(yArray);
+               if (board[tempx-1][tempy+1] instanceof piece && ((tempx - 2 == currentPiece.xPos) && (tempy + 2 == currentPiece.yPos))) {
+
+                 if (board[tempx-1][tempy+1].side != currentPiece.side) {
+
+                   board[tempx-1][tempy+1].alive = false;
+                   board[tempx-1][tempy+1] = null;
+
+                 }
+
+               }
+
+             }
+             if ((tempx +1 != 9) && (tempy +1 != 9)) {//will not run
+
+              if (board[tempx+1][tempy+1] instanceof piece && ((tempx + 2 == currentPiece.xPos) && (tempy + 2 == currentPiece.yPos))) {
+
+               if (board[tempx+1][tempy+1].side != currentPiece.side) {
+
+                 board[tempx+1][tempy+1].alive = false;
+                 board[tempx+1][tempy+1] = null;
+
+                }
+
+              }
+            }
+            //these if statements regulate the killing of moves
+
+
+             currentPiece.xPos = currentPiece.movesPossible.get(0).get(i);
+             currentPiece.yPos = currentPiece.movesPossible.get(1).get(i);//change it so that the piece that is chosen can be moved to one of the possible locations
+             //change the move coordiantes stored in the piece to the current move selected
+
+             if (currentPiece.yPos == 8 && currentPiece.side == 1) {
+               currentPiece.king = true;
+
+             }
+             if (currentPiece.yPos == 1 && currentPiece.side == 2) {
+               currentPiece.king = true;
+             }
+             //king the piece if it is in the other zone
+
+             selectedPiece = false;//variable used to track if a piece is currently selected
+             currentPiece.selected = false;//the piece is no longer selected
+
+             currentPiece.movesPossible = new ArrayList<ArrayList<Integer>>();
+             ArrayList<Integer> xArray = new ArrayList<Integer>();
+             ArrayList<Integer> yArray = new ArrayList<Integer>();
+
+             currentPiece.movesPossible.add(xArray);
+             currentPiece.movesPossible.add(yArray);
+             //reset the movesPossible array so that it doesn't contain the previous position possible moves
 
 
 
@@ -618,7 +615,7 @@ class piece extends checkers {
   }
     }
 
-    */
+    *///debug code
 
     public boolean checkMoves (piece p, int fXpos, int fYpos){
 
@@ -826,5 +823,7 @@ class player extends checkers{
 
 int side = 0;
 boolean playing = false;
+//a player class for each player
+//it will store the side of the palyer and the status
 
 }
